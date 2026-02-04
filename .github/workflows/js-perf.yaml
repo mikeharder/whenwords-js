@@ -8,13 +8,17 @@ on:
 
 jobs:
   perf:
-    name: JS Perf
+    name: JS Perf (${{ matrix.filter }})
     runs-on: ubuntu-latest
     permissions:
       contents: read
     defaults:
       run:
         working-directory: js
+    strategy:
+      fail-fast: false
+      matrix:
+        filter: [timeago, duration, parseDuration, humanDate-dateRange]
     
     steps:
     - uses: actions/checkout@v6
@@ -31,7 +35,13 @@ jobs:
     - name: npm run perf
       run: |
         set -o pipefail
-        npm run perf | tee perf-results.txt
+        if [ "${{ matrix.filter }}" = "humanDate-dateRange" ]; then
+          node perf/perf.js --filter humanDate | tee perf-results-humanDate.txt
+          node perf/perf.js --filter dateRange | tee perf-results-dateRange.txt
+          cat perf-results-humanDate.txt perf-results-dateRange.txt > perf-results.txt
+        else
+          node perf/perf.js --filter ${{ matrix.filter }} | tee perf-results.txt
+        fi
         {
           echo '```text'
           tail -n +5 perf-results.txt
