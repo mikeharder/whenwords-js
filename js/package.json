@@ -8,7 +8,7 @@
     "format:check": "prettier --check . --log-level debug",
     "lint": "cross-env DEBUG=eslint:eslint,eslint:linter eslint .",
     "perf": "node perf/perf.js",
-    "test": "node test/whenwords.test.js"
+    "test": "vitest run"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
@@ -16,6 +16,7 @@
     "globals": "^17.2.0",
     "js-yaml": "^4.1.1",
     "prettier": "3.8.1",
-    "tinybench": "^6.0.0"
+    "tinybench": "^6.0.0",
+    "vitest": "^3.2.4"
   }
 }
