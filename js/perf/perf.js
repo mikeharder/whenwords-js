@@ -17,7 +17,11 @@ const __dirname = path.dirname(__filename);
 // Parse command line arguments for filtering
 const args = process.argv.slice(2);
 const filterIndex = args.indexOf('--filter');
-const filter = filterIndex !== -1 ? args[filterIndex + 1] : null;
+const filterArg =
+  filterIndex !== -1 && filterIndex + 1 < args.length
+    ? args[filterIndex + 1]
+    : null;
+const filters = filterArg ? filterArg.split(',') : null;
 const validFilters = [
   'timeago',
   'duration',
@@ -26,11 +30,14 @@ const validFilters = [
   'dateRange',
 ];
 
-if (filter && !validFilters.includes(filter)) {
-  console.error(
-    `Invalid filter: ${filter}. Valid options: ${validFilters.join(', ')}`
-  );
-  process.exit(1);
+if (filters) {
+  const invalidFilters = filters.filter((f) => !validFilters.includes(f));
+  if (invalidFilters.length > 0) {
+    console.error(
+      `Invalid filter(s): ${invalidFilters.join(', ')}. Valid options: ${validFilters.join(', ')}`
+    );
+    process.exit(1);
+  }
 }
 
 // Load tests from YAML file
@@ -43,7 +50,7 @@ const tests = yaml.load(testsYaml);
 const bench = new Bench({ time: 500 });
 
 // Select a subset of timeago tests for benchmarking
-if (!filter || filter === 'timeago') {
+if (!filters || filters.includes('timeago')) {
   const timeagoTests = [
     tests.timeago.find((t) => t.name === 'just now - identical timestamps'),
     tests.timeago.find((t) => t.name === '30 minutes ago'),
@@ -62,7 +69,7 @@ if (!filter || filter === 'timeago') {
 }
 
 // Select a subset of duration tests for benchmarking
-if (!filter || filter === 'duration') {
+if (!filters || filters.includes('duration')) {
   const durationTests = [
     tests.duration.find((t) => t.name === 'zero seconds'),
     tests.duration.find((t) => t.name === '1 minute 30 seconds'),
@@ -83,7 +90,7 @@ if (!filter || filter === 'duration') {
 }
 
 // Select a subset of parse_duration tests for benchmarking
-if (!filter || filter === 'parseDuration') {
+if (!filters || filters.includes('parseDuration')) {
   const parseDurationTests = [
     tests.parse_duration.find((t) => t.name === 'compact hours minutes'),
     tests.parse_duration.find((t) => t.name === 'verbose'),
@@ -102,7 +109,7 @@ if (!filter || filter === 'parseDuration') {
 }
 
 // Select a subset of human_date tests for benchmarking
-if (!filter || filter === 'humanDate') {
+if (!filters || filters.includes('humanDate')) {
   const humanDateTests = [
     tests.human_date.find((t) => t.name === 'today'),
     tests.human_date.find((t) => t.name === 'yesterday'),
@@ -121,7 +128,7 @@ if (!filter || filter === 'humanDate') {
 }
 
 // Select a subset of date_range tests for benchmarking
-if (!filter || filter === 'dateRange') {
+if (!filters || filters.includes('dateRange')) {
   const dateRangeTests = [
     tests.date_range.find((t) => t.name === 'same day'),
     tests.date_range.find((t) => t.name === 'same month range'),

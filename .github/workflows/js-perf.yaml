@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        filter: [timeago, duration, parseDuration, humanDate-dateRange]
+        filter: [timeago, duration, parseDuration, 'humanDate,dateRange']
     
     steps:
     - uses: actions/checkout@v6
@@ -35,13 +35,7 @@ jobs:
     - name: npm run perf
       run: |
         set -o pipefail
-        if [ "${{ matrix.filter }}" = "humanDate-dateRange" ]; then
-          node perf/perf.js --filter humanDate | tee perf-results-humanDate.txt
-          node perf/perf.js --filter dateRange | tee perf-results-dateRange.txt
-          cat perf-results-humanDate.txt perf-results-dateRange.txt > perf-results.txt
-        else
-          node perf/perf.js --filter ${{ matrix.filter }} | tee perf-results.txt
-        fi
+        node perf/perf.js --filter ${{ matrix.filter }} | tee perf-results.txt
         {
           echo '```text'
           tail -n +5 perf-results.txt
