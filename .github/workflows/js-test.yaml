@@ -22,17 +22,20 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
-        cache: npm
-        cache-dependency-path: js/package-lock.json
+        cache: pnpm
+        cache-dependency-path: js/pnpm-lock.yaml
     
-    - name: npm ci
-      run: npm ci
+    - name: Install pnpm
+      run: npm install -g pnpm
     
-    - name: npm test
-      run: npm test
+    - name: pnpm install
+      run: pnpm install --frozen-lockfile
     
-    - name: npm run lint
-      run: npm run lint
+    - name: pnpm test
+      run: pnpm test
     
-    - name: npm run format:check
-      run: npm run format:check
+    - name: pnpm run lint
+      run: pnpm run lint
+    
+    - name: pnpm run format:check
+      run: pnpm run format:check

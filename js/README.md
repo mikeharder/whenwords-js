@@ -40,13 +40,13 @@ For complete API documentation, examples, and error handling details, see **[usa
 
 ```bash
 # Run tests
-npm test
+pnpm test
 
 # Format code
-npm run format
+pnpm run format
 
 # Check formatting
-npm run format:check
+pnpm run format:check
 ```
 
 ## Specification Compliance

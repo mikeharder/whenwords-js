@@ -22,16 +22,19 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
-        cache: npm
-        cache-dependency-path: js/package-lock.json
+        cache: pnpm
+        cache-dependency-path: js/pnpm-lock.yaml
     
-    - name: npm ci
-      run: npm ci --no-audit --no-fund
+    - name: Install pnpm
+      run: npm install -g pnpm
     
-    - name: npm run perf
+    - name: pnpm install
+      run: pnpm install --frozen-lockfile --no-audit --no-fund
+    
+    - name: pnpm run perf
       run: |
         set -o pipefail
-        npm run perf | tee perf-results.txt
+        pnpm run perf | tee perf-results.txt
         {
           echo '```text'
           tail -n +5 perf-results.txt
