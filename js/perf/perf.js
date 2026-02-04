@@ -5,7 +5,7 @@ import {
   parseDuration,
   humanDate,
   dateRange,
-} from '../src/index.js';
+} from '../src/whenwords.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -47,7 +47,7 @@ const testsYaml = fs.readFileSync(
 );
 const tests = yaml.load(testsYaml);
 
-const bench = new Bench({ time: 500 });
+const bench = new Bench({ time: 50, warmupTime: 10 });
 
 // Select a subset of timeago tests for benchmarking
 if (!filters || filters.includes('timeago')) {
