@@ -19,19 +19,24 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          cache: npm
-          cache-dependency-path: js/package-lock.json
+          cache: pnpm
+          cache-dependency-path: js/pnpm-lock.yaml
 
-      - name: npm ci
-        run: npm ci --no-audit --no-fund
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: npm run test:ci
+      - name: pnpm run test:ci
         run: |
           set -o pipefail
-          npm run test:ci | tee vitest-output.txt
+          pnpm run test:ci | tee vitest-output.txt
           {
             echo '## Vitest Summary'
             echo '```text'
@@ -43,8 +48,8 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: npm run lint
-        run: npm run lint
+      - name: pnpm run lint
+        run: pnpm run lint
 
-      - name: npm run format:check
-        run: npm run format:check
+      - name: pnpm run format:check
+        run: pnpm run format:check

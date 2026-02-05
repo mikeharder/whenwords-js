@@ -12,6 +12,23 @@ This is the JavaScript implementation of the [whenwords](https://github.com/dbre
 - **humanDate** — Returns contextual date strings ("Today", "Yesterday", "Last Tuesday")
 - **dateRange** — Formats smart date ranges ("March 5–7, 2024")
 
+## Installation
+
+### Setup pnpm (one-time)
+
+This project uses [pnpm](https://pnpm.io/) via [corepack](https://nodejs.org/api/corepack.html).
+
+```bash
+# Enable corepack
+corepack enable
+```
+
+Then install dependencies:
+
+```bash
+pnpm install
+```
+
 ## Quick Start
 
 ```javascript
@@ -40,13 +57,16 @@ For complete API documentation, examples, and error handling details, see **[usa
 
 ```bash
 # Run tests
-npm test
+pnpm test
 
 # Format code
-npm run format
+pnpm run format
 
 # Check formatting
-npm run format:check
+pnpm run format:check
+
+# Run all checks
+pnpm run check
 ```
 
 ## Specification Compliance
