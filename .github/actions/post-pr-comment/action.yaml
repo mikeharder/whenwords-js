@@ -14,6 +14,9 @@ inputs:
   github-token:
     description: 'GitHub token with pull-requests write permission'
     required: true
+  workflow-run-url:
+    description: 'URL to the workflow run that generated this comment'
+    required: false
 
 runs:
   using: composite
@@ -27,6 +30,12 @@ runs:
           echo "${{ inputs.header }}"
           echo ""
           cat "${{ inputs.body-file }}"
+          if [ -n "${{ inputs.workflow-run-url }}" ]; then
+            echo ""
+            echo "---"
+            echo ""
+            echo "_Posted by [workflow run](${{ inputs.workflow-run-url }})_"
+          fi
         } > pr-comment.txt
 
         # Find existing comment
