@@ -5,6 +5,7 @@
 **whenwords** is a library for human-friendly time formatting and parsing. It converts timestamps to readable strings like "3 hours ago" and parses duration strings like "2h 30m" into seconds.
 
 This repository contains:
+
 - The formal specification in `/spec/`
 - JavaScript implementation in `/js/`
 - Future implementations may be added
@@ -20,6 +21,7 @@ This repository contains:
 ## JavaScript Implementation
 
 ### Project Structure
+
 - **Source code**: `/js/src/whenwords.js`
 - **Tests**: `/js/test/whenwords.test.js`
 - **Documentation**: `/js/README.md` and `/js/usage.md`
@@ -27,28 +29,35 @@ This repository contains:
 
 ### Development Workflow
 
+**Prerequisites**: Enable corepack to use pnpm
+
 ```bash
-# Install dependencies (from /js directory)
-npm install
+# Enable corepack (one-time setup)
+corepack enable
+
+# From /js directory
+pnpm install
 
 # Run tests
-npm test
+pnpm test
 
 # Run tests with coverage (used in CI)
-npm run test:ci
+pnpm run test:ci
 
 # Run linting
-npm run lint
+pnpm run lint
 
 # Format code
-npm run format
+pnpm run format
 
 # Check formatting
-npm run format:check
+pnpm run format:check
 
 # Run all checks (test + lint + format:check)
-npm run check
+pnpm run check
 ```
+
+**Note**: The project is configured to use pnpm via corepack (see `packageManager` in `js/package.json`). If you prefer npm, you can still use it, but pnpm is the standard for this project.
 
 ### Code Style
 
@@ -90,6 +99,7 @@ function roundHalfUp(n) {
 ## Specification Compliance
 
 All implementations must:
+
 1. Follow the specification in `/spec/SPEC.md`
 2. Pass all tests in `/spec/tests.yaml`
 3. Generate minimal files (source, tests, usage.md)
@@ -97,20 +107,21 @@ All implementations must:
 
 ## When Making Changes
 
-- Run `npm test` to ensure spec compliance
-- Run `npm run check` before committing to verify tests, linting, and formatting
+- Run `pnpm test` to ensure spec compliance
+- Run `pnpm run check` before committing to verify tests, linting, and formatting
 - Keep functions pure and deterministic
 - Update `/js/usage.md` if API changes
 - Add tests to `/spec/tests.yaml` for new spec behaviors (cross-language)
 - Do not add internationalization unless specified
 - Maintain backward compatibility within v0.1.x
-- **Only update `package-lock.json` when adding, removing, or updating dependencies** — Do not commit incidental changes to package-lock.json that occur from running `npm install` or `npm ci`. If you need to run these commands for testing, revert any unintended package-lock.json changes before committing.
+- **Only update `pnpm-lock.yaml` when adding, removing, or updating dependencies** — Do not commit incidental changes to pnpm-lock.yaml that occur from running `pnpm install` or `pnpm ci`. If you need to run these commands for testing, revert any unintended pnpm-lock.yaml changes before committing.
 - **After all other tasks, reflect on your work, and update `copilot-instructions.md` if anything relevant has changed** — This ensures the instructions stay current with project practices and decisions.
 - **When given direct feedback in a PR, update `copilot-instructions.md`** — This makes it less likely you will need similar feedback in other PRs by incorporating lessons learned.
 
 ## GitHub Actions
 
 The repository uses GitHub Actions for CI:
+
 - `.github/workflows/js-test.yaml` — JavaScript tests with coverage reporting
 - `.github/workflows/js-perf.yaml` — Performance benchmarks
 - `.github/workflows/actions-test.yaml` — Workflow linting with actionlint
