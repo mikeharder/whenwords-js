@@ -108,7 +108,8 @@ All implementations must:
 ## When Making Changes
 
 - Run `pnpm test` to ensure spec compliance
-- Run `pnpm run check` before committing to verify tests, linting, and formatting
+- **ALWAYS run `pnpm run check` before considering a change "done"** — This verifies tests, linting, and formatting all pass
+- **Formatting is required** — All code must pass `pnpm run format:check` before committing. Run `pnpm run format` to auto-fix formatting issues.
 - Keep functions pure and deterministic
 - Update `/js/usage.md` if API changes
 - Add tests to `/spec/tests.yaml` for new spec behaviors (cross-language)
@@ -119,6 +120,40 @@ All implementations must:
 - **Only update `pnpm-lock.yaml` when adding, removing, or updating dependencies** — Do not commit incidental changes to pnpm-lock.yaml that occur from running `pnpm install` or `pnpm ci`. If you need to run these commands for testing, revert any unintended pnpm-lock.yaml changes before committing.
 - **After all other tasks, reflect on your work, and update `copilot-instructions.md` if anything relevant has changed** — This ensures the instructions stay current with project practices and decisions.
 - **When given direct feedback in a PR, update `copilot-instructions.md`** — This makes it less likely you will need similar feedback in other PRs by incorporating lessons learned.
+
+## Performance Optimization
+
+When optimizing performance-critical code:
+
+### Benchmarking
+
+- **Run performance tests first** — Use `pnpm run perf` to identify actual bottlenecks before making changes
+- **Measure, don't guess** — Focus optimization efforts on functions that show up as slow in benchmarks
+- **Compare before/after** — Document performance improvements with concrete numbers (e.g., "20x faster: 12,204ns → 602ns")
+
+### Common Performance Patterns
+
+- **Pre-compile regexes** — Move regex patterns outside functions as constants to avoid recompilation on each call
+- **Minimize regex passes** — Consolidate multiple regex patterns into a single comprehensive pattern when possible
+- **Avoid nested loops** — Look for O(n²) algorithms (e.g., overlap detection) that can be eliminated with better data structures
+- **Use object lookups** — Replace repeated string comparisons or searches with O(1) object property access
+- **Eliminate redundant operations** — Remove unnecessary type conversions, string operations, or checks that are already handled elsewhere
+- **Prefer simple algorithms** — A single-pass linear algorithm is usually faster than multiple passes, even with simpler logic per pass
+
+### Example: parseDuration Optimization
+
+The `parseDuration` function was optimized from ~12,000ns to ~600ns (20x improvement) by:
+
+1. Consolidating 12+ regex patterns into one comprehensive pattern
+2. Eliminating O(n²) overlap detection by using sequential matching
+3. Pre-compiling regex and lookup tables outside the function
+4. Removing redundant `toLowerCase()` calls
+
+### Performance Testing
+
+- Performance tests are in `/js/perf/perf.js` using the tinybench library
+- Run `pnpm run perf` to benchmark all functions
+- CI runs performance tests automatically via `.github/workflows/js-perf.yaml`
 
 ## GitHub Actions
 
