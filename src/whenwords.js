@@ -234,8 +234,8 @@ function parseDuration(input) {
 
   const str = trimmed.toLowerCase();
 
-  // Check for negative numbers
-  if (str.indexOf('-') !== -1) {
+  // Check for negative numbers (minus sign followed by optional space and digit)
+  if (/^-\s*\d/.test(str)) {
     throw new Error('Negative durations not allowed');
   }
 
