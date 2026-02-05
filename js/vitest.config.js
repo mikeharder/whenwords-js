@@ -19,5 +19,6 @@ export default defineConfig({
       branches: 80,
       statements: 80,
     },
+    reporters: ['verbose'],
   },
 });
