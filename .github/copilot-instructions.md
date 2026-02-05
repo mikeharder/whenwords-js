@@ -64,7 +64,6 @@ npm run check
 - **Test data**: Tests are driven by `/spec/tests.yaml` to ensure specification compliance
 - **Test structure**: Use `describe` and `it` blocks, load YAML test definitions
 - **All implementations must pass the spec tests**
-- **Coverage**: Code coverage is tracked using Vitest's V8 provider with 80% thresholds for statements, branches, functions, and lines
 - **CI Testing**: Use `npm run test:ci` in CI to generate coverage reports; use `npm test` for faster local development
 - **Coverage configuration**: Located in `js/vitest.config.js`, configured to write text reports directly to `coverage/coverage.txt` using Vitest's built-in `file` option
 
