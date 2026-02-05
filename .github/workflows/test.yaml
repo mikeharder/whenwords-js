@@ -18,22 +18,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+      - name: bun install
+        run: bun install --frozen-lockfile
 
-      - name: pnpm install
-        run: pnpm install --frozen-lockfile
-
-      - name: pnpm run test:ci
+      - name: bun run test:ci
         run: |
           set -o pipefail
-          pnpm run test:ci | tee vitest-output.txt
+          bun run test:ci | tee vitest-output.txt
           {
             echo '## Vitest Summary'
             echo '```text'
@@ -45,11 +39,11 @@ jobs:
             echo '```'
           } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
 
-      - name: pnpm run lint
-        run: pnpm run lint
+      - name: bun run lint
+        run: bun run lint
 
-      - name: pnpm run format:check
-        run: pnpm run format:check
+      - name: bun run format:check
+        run: bun run format:check
 
       # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
       - name: Setup actionlint matcher

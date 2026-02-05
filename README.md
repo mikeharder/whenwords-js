@@ -18,19 +18,19 @@ This is the JavaScript implementation of the [whenwords](https://github.com/dbre
 
 ## Installation
 
-### Setup pnpm (one-time)
+### Setup bun (one-time)
 
-This project uses [pnpm](https://pnpm.io/) via [corepack](https://nodejs.org/api/corepack.html).
+This project uses [bun](https://bun.sh/) for package management.
 
 ```bash
-# Enable corepack
-corepack enable
+# Install bun
+curl -fsSL https://bun.sh/install | bash
 ```
 
 Then install dependencies:
 
 ```bash
-pnpm install
+bun install
 ```
 
 ## Quick Start
@@ -70,8 +70,8 @@ Try out the library in your browser with the **[interactive playground](https://
 To use the playground locally, serve the repository with any HTTP server:
 
 ```bash
-# Using pnpm (recommended)
-pnpm run web
+# Using bun (recommended)
+bun run web
 
 # Using Python
 python3 -m http.server 8000
@@ -86,25 +86,25 @@ npx http-server
 
 ```bash
 # Run tests
-pnpm test
+bun test
 
 # Run tests with coverage
-pnpm run test:ci
+bun run test:ci
 
 # Run linting
-pnpm run lint
+bun run lint
 
 # Format code
-pnpm run format
+bun run format
 
 # Check formatting
-pnpm run format:check
+bun run format:check
 
 # Run all checks (test + lint + format:check)
-pnpm run check
+bun run check
 
 # Run performance benchmarks
-pnpm run perf
+bun run perf
 ```
 
 ## Specification Compliance

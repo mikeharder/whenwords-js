@@ -2,9 +2,9 @@
   "name": "whenwords-js",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "bun@1.1.42",
   "scripts": {
-    "check": "pnpm run test && pnpm run lint && pnpm run format:check",
+    "check": "bun run test && bun run lint && bun run format:check",
     "format": "prettier --write .",
     "format:check": "prettier --check . --log-level debug",
     "lint": "cross-env DEBUG=eslint:eslint,eslint:linter eslint .",
