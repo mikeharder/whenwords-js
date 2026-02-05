@@ -30,12 +30,11 @@ jobs:
     
     - name: npm run test:ci
       run: |
-        set -o pipefail
-        npm run test:ci | tee coverage-results.txt
+        npm run test:ci
         {
           echo '## Coverage Report'
           echo '```text'
-          grep -A 10 "Coverage report" coverage-results.txt || echo "Coverage report not found"
+          node scripts/format-coverage.js
           echo '```'
         } >> "$GITHUB_STEP_SUMMARY"
     
