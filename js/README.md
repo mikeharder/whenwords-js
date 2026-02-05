@@ -53,6 +53,28 @@ console.log(humanDate(yesterday, now)); // "Yesterday"
 
 For complete API documentation, examples, and error handling details, see **[usage.md](usage.md)**.
 
+## Interactive Playground
+
+Try out the library in your browser with the **[interactive playground](web/index.html)**. The playground demonstrates all five APIs with live, working examples including:
+
+- Relative time formatting with `timeago()`
+- Duration formatting with `duration()` (compact mode, max units)
+- Parsing duration strings with `parseDuration()`
+- Contextual dates with `humanDate()`
+- Smart date ranges with `dateRange()`
+
+To use the playground locally, serve the `js` directory with any HTTP server:
+
+```bash
+# Using Python
+python3 -m http.server 8000
+
+# Using Node.js http-server
+npx http-server
+
+# Then open http://localhost:8000/web/index.html
+```
+
 ## Development
 
 ```bash
