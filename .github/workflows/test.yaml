@@ -1,0 +1,110 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: pnpm run test:ci
+        run: |
+          set -o pipefail
+          pnpm run test:ci | tee vitest-output.txt
+          {
+            echo '## Vitest Summary'
+            echo '```text'
+            awk '/Test Files/{flag=1} flag{print} /Duration/{flag=0}' vitest-output.txt | sed 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+            echo '## Coverage Report'
+            echo '```text'
+            cat coverage/coverage.txt
+            echo '```'
+          } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
+
+      - name: Post PR comment with test results
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "## 🧪 Test Results"
+            echo ""
+            cat test-summary.txt
+          } > pr-comment.txt
+
+          # Find existing comment
+          COMMENT_ID=$(gh api "repos/{owner}/{repo}/issues/${{ github.event.pull_request.number }}/comments" \
+            --jq '.[] | select(.body | startswith("## 🧪 Test Results")) | .id' | head -1)
+
+          if [ -n "$COMMENT_ID" ]; then
+            # Update existing comment
+            gh api "repos/{owner}/{repo}/issues/comments/$COMMENT_ID" \
+              -X PATCH \
+              -F body=@pr-comment.txt
+          else
+            # Create new comment
+            gh pr comment ${{ github.event.pull_request.number }} --body-file pr-comment.txt
+          fi
+
+      - name: pnpm run lint
+        run: pnpm run lint
+
+      - name: pnpm run format:check
+        run: pnpm run format:check
+
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
+      - name: Setup actionlint matcher
+        run: echo "::add-matcher::.github/matchers/actionlint-matcher.json"
+
+      - name: Actionlint
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color -verbose
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: format:check
+        run: npx prettier --check .github --log-level warn

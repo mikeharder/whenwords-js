@@ -1,4 +1,4 @@
-name: JS Tests
+name: Perf
 
 on:
   push:
@@ -7,63 +7,52 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: JS Tests
-    runs-on: ubuntu-slim
+  perf:
+    name: Perf
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
-    defaults:
-      run:
-        working-directory: js
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           cache: pnpm
-          cache-dependency-path: js/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: pnpm install
         run: pnpm install --frozen-lockfile
 
-      - name: pnpm run test:ci
+      - name: pnpm run perf
         run: |
           set -o pipefail
-          pnpm run test:ci | tee vitest-output.txt
+          pnpm run perf | tee perf-results.txt
           {
-            echo '## Vitest Summary'
             echo '```text'
-            awk '/Test Files/{flag=1} flag{print} /Duration/{flag=0}' vitest-output.txt | sed 's/\x1b\[[0-9;]*m//g'
+            tail -n +5 perf-results.txt
             echo '```'
-            echo '## Coverage Report'
-            echo '```text'
-            cat coverage/coverage.txt
-            echo '```'
-          } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
+          } | tee "$GITHUB_STEP_SUMMARY" > perf-summary.txt
 
-      - name: Post PR comment with test results
+      - name: Post PR comment with perf results
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cd "$GITHUB_WORKSPACE"
           {
-            echo "## 🧪 JS Test Results"
+            echo "## ⚡ Perf Results"
             echo ""
-            cat js/test-summary.txt
+            cat perf-summary.txt
           } > pr-comment.txt
 
           # Find existing comment
           COMMENT_ID=$(gh api "repos/{owner}/{repo}/issues/${{ github.event.pull_request.number }}/comments" \
-            --jq '.[] | select(.body | startswith("## 🧪 JS Test Results")) | .id' | head -1)
+            --jq '.[] | select(.body | startswith("## ⚡ Perf Results")) | .id' | head -1)
 
           if [ -n "$COMMENT_ID" ]; then
             # Update existing comment
@@ -74,9 +63,3 @@ jobs:
             # Create new comment
             gh pr comment ${{ github.event.pull_request.number }} --body-file pr-comment.txt
           fi
-
-      - name: pnpm run lint
-        run: pnpm run lint
-
-      - name: pnpm run format:check
-        run: pnpm run format:check
