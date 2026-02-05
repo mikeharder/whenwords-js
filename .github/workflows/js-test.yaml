@@ -15,29 +15,29 @@ jobs:
     defaults:
       run:
         working-directory: js
-    
+
     steps:
-    - uses: actions/checkout@v6
-    
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 10
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        cache: pnpm
-        cache-dependency-path: js/pnpm-lock.yaml
-    
-    - name: pnpm install
-      run: pnpm install --frozen-lockfile
-    
-    - name: pnpm test
-      run: pnpm test
-    
-    - name: pnpm run lint
-      run: pnpm run lint
-    
-    - name: pnpm run format:check
-      run: pnpm run format:check
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          cache-dependency-path: js/pnpm-lock.yaml
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: pnpm test
+        run: pnpm test
+
+      - name: pnpm run lint
+        run: pnpm run lint
+
+      - name: pnpm run format:check
+        run: pnpm run format:check
