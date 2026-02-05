@@ -33,8 +33,20 @@ jobs:
       - name: pnpm install
         run: pnpm install --frozen-lockfile
 
-      - name: pnpm test
-        run: pnpm test
+      - name: pnpm run test:ci
+        run: |
+          set -o pipefail
+          pnpm run test:ci | tee vitest-output.txt
+          {
+            echo '## Vitest Summary'
+            echo '```text'
+            awk '/Test Files/{flag=1} flag{print} /Duration/{flag=0}' vitest-output.txt | sed 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+            echo '## Coverage Report'
+            echo '```text'
+            cat coverage/coverage.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: pnpm run lint
         run: pnpm run lint
