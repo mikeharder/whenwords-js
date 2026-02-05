@@ -4,7 +4,7 @@ Human-friendly time formatting and parsing.
 
 ## Installation
 
-Add `index.js` to your project and import it:
+Add `src/whenwords.js` to your project and import it:
 
 ```javascript
 import {
@@ -13,7 +13,7 @@ import {
   parseDuration,
   humanDate,
   dateRange,
-} from './index.js';
+} from './src/whenwords.js';
 ```
 
 ## Quick start

@@ -29,12 +29,9 @@ jobs:
 
       - name: Prepare deployment files
         run: |
-          # Copy playground files to web directory
-          cp js/web/index.html web/playground.html
-          cp js/src/whenwords.js web/whenwords.js
-
-          # Update the import path in playground.html to use the copied whenwords.js
-          sed -i "s|from '../src/whenwords.js'|from './whenwords.js'|g" web/playground.html
+          # Copy source file and playground to web directory
+          cp src/whenwords.js web/whenwords.js
+          # playground.html already exists in web directory
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

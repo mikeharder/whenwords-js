@@ -7,8 +7,8 @@
 This repository contains:
 
 - The formal specification in `/spec/`
-- JavaScript implementation in `/js/`
-- Future implementations may be added
+- JavaScript implementation in the root directory
+- Interactive playground in `/web/`
 
 ## Core Design Principles
 
@@ -22,9 +22,11 @@ This repository contains:
 
 ### Project Structure
 
-- **Source code**: `/js/src/whenwords.js`
-- **Tests**: `/js/test/whenwords.test.js`
-- **Documentation**: `/js/README.md` and `/js/usage.md`
+- **Source code**: `/src/whenwords.js`
+- **Tests**: `/test/whenwords.test.js`
+- **Performance tests**: `/perf/perf.js`
+- **Documentation**: `/README.md` and `/usage.md`
+- **Interactive playground**: `/web/playground.html` (deployed at https://mikeharder.github.io/whenwords-js/playground.html)
 - **Spec tests**: Tests are loaded from `/spec/tests.yaml` and must pass
 
 ### Development Workflow
@@ -35,7 +37,7 @@ This repository contains:
 # Enable corepack (one-time setup)
 corepack enable
 
-# From /js directory
+# From repository root
 pnpm install
 
 # Run tests
@@ -55,9 +57,15 @@ pnpm run format:check
 
 # Run all checks (test + lint + format:check)
 pnpm run check
+
+# Run performance benchmarks
+pnpm run perf
+
+# Start local web server for playground
+pnpm run web
 ```
 
-**Note**: The project is configured to use pnpm via corepack (see `packageManager` in `js/package.json`). If you prefer npm, you can still use it, but pnpm is the standard for this project.
+**Note**: The project is configured to use pnpm via corepack (see `packageManager` in `package.json`). If you prefer npm, you can still use it, but pnpm is the standard for this project.
 
 ### Code Style
 
@@ -73,8 +81,8 @@ pnpm run check
 - **Test data**: Tests are driven by `/spec/tests.yaml` to ensure specification compliance
 - **Test structure**: Use `describe` and `it` blocks, load YAML test definitions
 - **All implementations must pass the spec tests**
-- **CI Testing**: Use `npm run test:ci` in CI to generate coverage reports; use `npm test` for faster local development
-- **Coverage configuration**: Located in `js/vitest.config.js`, configured to write text reports directly to `coverage/coverage.txt` using Vitest's built-in `file` option
+- **CI Testing**: Use `pnpm run test:ci` in CI to generate coverage reports; use `pnpm test` for faster local development
+- **Coverage configuration**: Located in `vitest.config.js`, configured to write text reports directly to `coverage/coverage.txt` using Vitest's built-in `file` option
 
 ### Common Patterns
 
@@ -111,7 +119,7 @@ All implementations must:
 - **ALWAYS run `pnpm run check` before considering a change "done"** — This verifies tests, linting, and formatting all pass
 - **Formatting is required** — All code must pass `pnpm run format:check` before committing. Run `pnpm run format` to auto-fix formatting issues.
 - Keep functions pure and deterministic
-- Update `/js/usage.md` if API changes
+- Update `/usage.md` if API changes
 - Add tests to `/spec/tests.yaml` for new spec behaviors (cross-language)
 - Do not add internationalization unless specified
 - Maintain backward compatibility within v0.1.x
@@ -151,35 +159,35 @@ The `parseDuration` function was optimized from ~12,000ns to ~600ns (20x improve
 
 ### Performance Testing
 
-- Performance tests are in `/js/perf/perf.js` using the tinybench library
+- Performance tests are in `/perf/perf.js` using the tinybench library
 - Run `pnpm run perf` to benchmark all functions
-- CI runs performance tests automatically via `.github/workflows/js-perf.yaml`
+- CI runs performance tests automatically via `.github/workflows/perf.yaml`
 
 ## GitHub Actions
 
 The repository uses GitHub Actions for CI:
 
-- `.github/workflows/js-test.yaml` — JavaScript tests with coverage reporting
-- `.github/workflows/js-perf.yaml` — Performance benchmarks
-- `.github/workflows/actions-test.yaml` — Workflow linting with actionlint
+- `.github/workflows/test.yaml` — Tests, linting, and actionlint workflow validation
+- `.github/workflows/perf.yaml` — Performance benchmarks
+- `.github/workflows/pages.yaml` — Deploy playground to GitHub Pages
 
 ### CI Workflow Best Practices
 
 - **Avoid third-party actions** — Use built-in GitHub Actions features and native tool capabilities when possible
 - **Step summaries** — Display test results and coverage reports in GitHub Actions step summaries using `$GITHUB_STEP_SUMMARY`
-- **PR comments** — For PR events, post step summary content as PR comments using GitHub CLI for easier review. Use a distinct header (e.g., "🧪 JS Test Results") to identify the comment, then search for and update existing comments instead of creating new ones each time. This keeps PR conversations clean.
+- **PR comments** — For PR events, post step summary content as PR comments using GitHub CLI for easier review. Use a distinct header (e.g., "🧪 Test Results") to identify the comment, then search for and update existing comments instead of creating new ones each time. This keeps PR conversations clean.
 - **Coverage reporting** — Use Vitest's built-in text reporter with `file` option to write coverage directly to a file (e.g., `coverage/coverage.txt`), then read it in the workflow
 - **No custom scripts** — Prefer configuring tools (like Vitest) to generate output in the desired format rather than writing custom parsing scripts
 
 ### Workflow Naming Conventions
 
-- **Workflow names**: Use clear, descriptive names that indicate the workflow's purpose (e.g., "Actions Tests" for testing GitHub Actions workflows)
-- **File names**: Use kebab-case filenames that match the workflow's purpose (e.g., `actions-test.yaml` for Actions workflow testing)
-- **Job names**: Use lowercase job IDs with hyphens (e.g., `test` or `actions-test`) and provide descriptive display names (e.g., `name: Actions Tests`) for consistency with GitHub Actions conventions
+- **Workflow names**: Use clear, descriptive names that indicate the workflow's purpose (e.g., "Tests" for running tests and linting)
+- **File names**: Use kebab-case filenames that match the workflow's purpose (e.g., `test.yaml` for testing, `perf.yaml` for performance)
+- **Job names**: Use lowercase job IDs with hyphens (e.g., `test` or `actionlint`) and provide descriptive display names (e.g., `name: Tests`) for consistency with GitHub Actions conventions
 
 ## Documentation
 
 - **Specification**: `/spec/SPEC.md` — Authoritative behavior definition
-- **JavaScript README**: `/js/README.md` — Quick start guide
-- **Usage guide**: `/js/usage.md` — Detailed API documentation
-- **Project README**: `/README.md` — Repository overview
+- **Project README**: `/README.md` — Quick start guide and overview
+- **Usage guide**: `/usage.md` — Detailed API documentation
+- **Interactive playground**: `/web/playground.html` — Live examples

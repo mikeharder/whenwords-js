@@ -1,4 +1,4 @@
-name: JS Tests
+name: Tests
 
 on:
   push:
@@ -8,14 +8,11 @@ on:
 
 jobs:
   test:
-    name: JS Tests
+    name: Tests
     runs-on: ubuntu-slim
     permissions:
       contents: read
       pull-requests: write
-    defaults:
-      run:
-        working-directory: js
 
     steps:
       - uses: actions/checkout@v6
@@ -29,7 +26,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           cache: pnpm
-          cache-dependency-path: js/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: pnpm install
         run: pnpm install --frozen-lockfile
@@ -54,16 +51,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cd "$GITHUB_WORKSPACE"
           {
-            echo "## 🧪 JS Test Results"
+            echo "## 🧪 Test Results"
             echo ""
-            cat js/test-summary.txt
+            cat test-summary.txt
           } > pr-comment.txt
 
           # Find existing comment
           COMMENT_ID=$(gh api "repos/{owner}/{repo}/issues/${{ github.event.pull_request.number }}/comments" \
-            --jq '.[] | select(.body | startswith("## 🧪 JS Test Results")) | .id' | head -1)
+            --jq '.[] | select(.body | startswith("## 🧪 Test Results")) | .id' | head -1)
 
           if [ -n "$COMMENT_ID" ]; then
             # Update existing comment
@@ -80,3 +76,39 @@ jobs:
 
       - name: pnpm run format:check
         run: pnpm run format:check
+
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
+      - name: Setup actionlint matcher
+        run: echo "::add-matcher::.github/matchers/actionlint-matcher.json"
+
+      - name: Actionlint
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color -verbose
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: format:check
+        run: npx prettier --check .github --log-level warn

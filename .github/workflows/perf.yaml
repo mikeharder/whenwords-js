@@ -1,4 +1,4 @@
-name: JS Perf
+name: Perf
 
 on:
   push:
@@ -8,14 +8,11 @@ on:
 
 jobs:
   perf:
-    name: JS Perf
+    name: Perf
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
-    defaults:
-      run:
-        working-directory: js
 
     steps:
       - uses: actions/checkout@v6
@@ -29,7 +26,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           cache: pnpm
-          cache-dependency-path: js/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: pnpm install
         run: pnpm install --frozen-lockfile
@@ -49,16 +46,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cd "$GITHUB_WORKSPACE"
           {
-            echo "## ⚡ JS Perf Results"
+            echo "## ⚡ Perf Results"
             echo ""
-            cat js/perf-summary.txt
+            cat perf-summary.txt
           } > pr-comment.txt
 
           # Find existing comment
           COMMENT_ID=$(gh api "repos/{owner}/{repo}/issues/${{ github.event.pull_request.number }}/comments" \
-            --jq '.[] | select(.body | startswith("## ⚡ JS Perf Results")) | .id' | head -1)
+            --jq '.[] | select(.body | startswith("## ⚡ Perf Results")) | .id' | head -1)
 
           if [ -n "$COMMENT_ID" ]; then
             # Update existing comment
