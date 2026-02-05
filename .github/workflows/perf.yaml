@@ -48,3 +48,4 @@ jobs:
           body-file: perf-summary.txt
           pr-number: ${{ github.event.pull_request.number }}
           github-token: ${{ github.token }}
+          workflow-run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
