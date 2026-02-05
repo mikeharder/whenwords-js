@@ -11,12 +11,12 @@ Implement the whenwords library in [LANGUAGE].
 
 1. Read SPEC.md for complete behavior specification
 2. Parse tests.yaml and generate a test file
-3. Implement all five functions: timeago, duration, parse_duration,
+3. Implement all five functions: timeago, duration, parse_duration, 
    human_date, date_range
 4. Run tests until all pass
 5. Place implementation in [LOCATION]
 
-All tests.yaml test cases must pass. See SPEC.md "Testing" section
+All tests.yaml test cases must pass. See SPEC.md "Testing" section 
 for test generation examples.
 ```
 
@@ -30,11 +30,11 @@ for test generation examples.
 
 ## Files
 
-| File       | Purpose                                    |
-| ---------- | ------------------------------------------ |
-| SPEC.md    | Complete behavior specification            |
-| tests.yaml | Language-agnostic test cases               |
-| VERIFY.md  | Post-implementation verification checklist |
+| File | Purpose |
+|------|---------|
+| SPEC.md | Complete behavior specification |
+| tests.yaml | Language-agnostic test cases |
+| VERIFY.md | Post-implementation verification checklist |
 
 ## Verification
 
