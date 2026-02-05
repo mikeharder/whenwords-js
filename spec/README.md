@@ -24,17 +24,17 @@ But like I said: the `whenwords` library _contains no code_. Instead, `whenwords
 
 The installation instructions are comically simple, just a prompt to paste into Claude, Codex, Cursor, whatever. It's short enough to print here in its entirety:
 
-``` markdown
+```markdown
 Implement the whenwords library in [LANGUAGE].
 
 1. Read SPEC.md for complete behavior specification
 2. Parse tests.yaml and generate a test file
-3. Implement all five functions: timeago, duration, parse_duration, 
+3. Implement all five functions: timeago, duration, parse_duration,
    human_date, date_range
 4. Run tests until all pass
 5. Place implementation in [LOCATION]
 
-All tests.yaml test cases must pass. See SPEC.md "Testing" section 
+All tests.yaml test cases must pass. See SPEC.md "Testing" section
 for test generation examples.
 ```
 

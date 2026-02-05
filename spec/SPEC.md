@@ -25,11 +25,13 @@ All functions are pure—no side effects, no I/O, no system clock access. The re
 Generate the minimal files needed to use and test the library. Do not create package distribution scaffolding.
 
 **Do generate:**
+
 - Library source file(s)
 - Test file(s)
 - usage.md
 
 **Do not generate:**
+
 - setup.py, pyproject.toml with build/publish metadata (Python)
 - Publishable Cargo.toml fields like description, license, repository, keywords (Rust—keep only `[package]` name, version, edition)
 - package.json with publish config (Node)
@@ -45,17 +47,18 @@ The goal is a working implementation that can be copied into a project, not a pu
 
 Since this spec targets multiple languages, types are described abstractly:
 
-| Spec type | Meaning | Examples |
-|-----------|---------|----------|
+| Spec type   | Meaning                                                                        | Examples                                                   |
+| ----------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
 | `timestamp` | Unix seconds (integer or float) OR ISO 8601 string OR language-native datetime | `1704067200`, `"2024-01-01T00:00:00Z"`, `Date`, `datetime` |
-| `number` | Integer or float as appropriate | `3600`, `3600.5` |
-| `string` | UTF-8 text | `"2 hours ago"` |
-| `options` | Language-idiomatic options object | `{compact: true}`, `Options { compact: true }` |
-| `error` | Language-idiomatic error | `ValueError`, `Err(...)`, `null`, `throw` |
+| `number`    | Integer or float as appropriate                                                | `3600`, `3600.5`                                           |
+| `string`    | UTF-8 text                                                                     | `"2 hours ago"`                                            |
+| `options`   | Language-idiomatic options object                                              | `{compact: true}`, `Options { compact: true }`             |
+| `error`     | Language-idiomatic error                                                       | `ValueError`, `Err(...)`, `null`, `throw`                  |
 
 ### Timestamp normalization
 
 When a function receives a `timestamp`:
+
 1. If integer/float: treat as Unix seconds
 2. If ISO 8601 string: parse to Unix seconds (error if invalid)
 3. If language-native datetime: convert to Unix seconds
@@ -68,23 +71,23 @@ Implementations may accept milliseconds if clearly documented, but the spec test
 
 Errors should be reported idiomatically for the target language:
 
-| Language | Error style |
-|----------|-------------|
-| Python | Raise `ValueError` with descriptive message |
+| Language   | Error style                                     |
+| ---------- | ----------------------------------------------- |
+| Python     | Raise `ValueError` with descriptive message     |
 | TypeScript | Throw `Error` or return `null` (document which) |
-| Rust | Return `Result<T, ParseError>` |
-| Go | Return `(value, error)` tuple |
-| Java | Throw `IllegalArgumentException` |
+| Rust       | Return `Result<T, ParseError>`                  |
+| Go         | Return `(value, error)` tuple                   |
+| Java       | Throw `IllegalArgumentException`                |
 
 **Error conditions by function:**
 
-| Function | Error when |
-|----------|------------|
-| `timeago` | Invalid timestamp format |
-| `duration` | Negative seconds, NaN, infinite |
+| Function         | Error when                                       |
+| ---------------- | ------------------------------------------------ |
+| `timeago`        | Invalid timestamp format                         |
+| `duration`       | Negative seconds, NaN, infinite                  |
 | `parse_duration` | Empty string, unparseable input, negative result |
-| `human_date` | Invalid timestamp format |
-| `date_range` | Invalid timestamp format |
+| `human_date`     | Invalid timestamp format                         |
+| `date_range`     | Invalid timestamp format                         |
 
 When in doubt, be liberal in inputs (accept reasonable variations) and strict in outputs (always return spec-compliant strings).
 
@@ -95,6 +98,7 @@ When in doubt, be liberal in inputs (accept reasonable variations) and strict in
 **For relative functions (`timeago`, `duration`, `parse_duration`):** Timezones don't matter. These operate on durations between timestamps.
 
 **For calendar functions (`human_date`, `date_range`):**
+
 - Timestamps are instants in time (UTC)
 - The output depends on which calendar day that instant falls on
 - By default, interpret timestamps in **UTC**
@@ -123,10 +127,11 @@ When calculating `n`, round to nearest integer. Use half-up rounding (2.5 → 3,
 ### duration rounding
 
 When `max_units` truncates output, round the smallest displayed unit:
+
 - `duration(3659)` with default max_units=2 → "1 hour" (59 seconds rounds down)
 - `duration(3690)` with max_units=1 → "1 hour" (90 seconds = 1.5 min, rounds to 2, but we're only showing hours which rounds to 1)
 
-Rounding applies to the *display*, not to intermediate calculations.
+Rounding applies to the _display_, not to intermediate calculations.
 
 ### Pluralization
 
@@ -142,30 +147,32 @@ Rounding applies to the *display*, not to intermediate calculations.
 Returns a human-readable relative time string.
 
 **Arguments:**
+
 - `timestamp`: Unix timestamp (seconds) or ISO 8601 string
 - `reference`: Optional. Defaults to `timestamp` if omitted (returns "just now"). In real usage, callers pass current time.
 
 **Behavior:**
 
-| Condition | Output |
-|-----------|--------|
-| 0–44 seconds | "just now" |
-| 45–89 seconds | "1 minute ago" |
+| Condition               | Output            |
+| ----------------------- | ----------------- |
+| 0–44 seconds            | "just now"        |
+| 45–89 seconds           | "1 minute ago"    |
 | 90 seconds – 44 minutes | "{n} minutes ago" |
-| 45–89 minutes | "1 hour ago" |
-| 90 minutes – 21 hours | "{n} hours ago" |
-| 22–35 hours | "1 day ago" |
-| 36 hours – 25 days | "{n} days ago" |
-| 26–45 days | "1 month ago" |
-| 46 days – 319 days | "{n} months ago" |
-| 320–547 days | "1 year ago" |
-| 548+ days | "{n} years ago" |
+| 45–89 minutes           | "1 hour ago"      |
+| 90 minutes – 21 hours   | "{n} hours ago"   |
+| 22–35 hours             | "1 day ago"       |
+| 36 hours – 25 days      | "{n} days ago"    |
+| 26–45 days              | "1 month ago"     |
+| 46 days – 319 days      | "{n} months ago"  |
+| 320–547 days            | "1 year ago"      |
+| 548+ days               | "{n} years ago"   |
 
 Future times use "in {n} {units}" instead of "{n} {units} ago".
 
 **Rationale:** Thresholds are chosen so the output never feels wrong. "2 days ago" should never describe something 47 hours old (feels like yesterday). The 45-second "just now" window prevents jittery UIs showing "1 second ago".
 
 **Edge cases:**
+
 - Identical timestamps → "just now"
 - Negative differences (future) → "in 3 hours"
 - Very large values → cap at years, no overflow
@@ -177,17 +184,20 @@ Future times use "in {n} {units}" instead of "{n} {units} ago".
 Formats a duration (not relative to now).
 
 **Arguments:**
+
 - `seconds`: Non-negative number
 - `options`: Object with optional fields:
   - `compact`: boolean (default false). If true, use "2h 34m" style.
   - `max_units`: integer (default 2). Maximum units to show.
 
 **Behavior:**
+
 - Units: years (365d), months (30d), days, hours, minutes, seconds
 - Only shows non-zero units
 - Rounds smallest displayed unit
 
 **Examples:**
+
 - `duration(3661)` → "1 hour, 1 minute"
 - `duration(3661, {compact: true})` → "1h 1m"
 - `duration(3661, {max_units: 1})` → "1 hour"
@@ -201,6 +211,7 @@ Formats a duration (not relative to now).
 Parses a human-written duration string into seconds.
 
 **Accepted formats:**
+
 - Compact: "2h30m", "2h 30m", "2h, 30m"
 - Verbose: "2 hours 30 minutes", "2 hours and 30 minutes"
 - Decimal: "2.5 hours", "1.5h"
@@ -208,6 +219,7 @@ Parses a human-written duration string into seconds.
 - Colon notation: "2:30" (interpreted as h:mm), "2:30:00" (h:mm:ss)
 
 **Unit aliases:**
+
 - seconds: s, sec, secs, second, seconds
 - minutes: m, min, mins, minute, minutes
 - hours: h, hr, hrs, hour, hours
@@ -215,6 +227,7 @@ Parses a human-written duration string into seconds.
 - weeks: w, wk, wks, week, weeks
 
 **Error conditions:**
+
 - Empty string
 - No parseable units
 - Negative values
@@ -228,20 +241,21 @@ Parses a human-written duration string into seconds.
 Returns a contextual date string.
 
 **Arguments:**
+
 - `timestamp`: The date to format
 - `reference`: The "current" date for comparison
 
 **Behavior:**
 
-| Condition | Output |
-|-----------|--------|
-| Same day | "Today" |
-| Previous day | "Yesterday" |
-| Next day | "Tomorrow" |
-| Within past 7 days | "Last {weekday}" |
-| Within next 7 days | "This {weekday}" |
-| Same year | "{Month} {day}" |
-| Different year | "{Month} {day}, {year}" |
+| Condition          | Output                  |
+| ------------------ | ----------------------- |
+| Same day           | "Today"                 |
+| Previous day       | "Yesterday"             |
+| Next day           | "Tomorrow"              |
+| Within past 7 days | "Last {weekday}"        |
+| Within next 7 days | "This {weekday}"        |
+| Same year          | "{Month} {day}"         |
+| Different year     | "{Month} {day}, {year}" |
 
 ---
 
@@ -250,16 +264,19 @@ Returns a contextual date string.
 Formats a date range with smart abbreviation.
 
 **Arguments:**
+
 - `start`: Start timestamp
 - `end`: End timestamp
 
 **Behavior:**
+
 - Same day: "March 5, 2024"
 - Same month: "March 5–7, 2024"
 - Same year: "March 5 – April 7, 2024"
 - Different years: "December 28, 2024 – January 3, 2025"
 
 **Edge cases:**
+
 - `start` equals `end`: treat as single day
 - `start` after `end`: swap them silently
 
@@ -272,12 +289,13 @@ Formats a date range with smart abbreviation.
 Tests are defined in `tests.yaml` as language-agnostic input/output pairs.
 
 Structure:
+
 ```yaml
 function_name:
-  - name: "human-readable test name"
-    input: { ... }        # Function arguments
-    output: "expected"    # Expected return value
-    error: true           # Present only if function should error
+  - name: 'human-readable test name'
+    input: { ... } # Function arguments
+    output: 'expected' # Expected return value
+    error: true # Present only if function should error
 ```
 
 ### Using tests.yaml
@@ -296,26 +314,31 @@ Implementations MUST pass all tests.yaml test cases. The workflow:
 Each function has specific input fields:
 
 **timeago:**
+
 ```yaml
 input: { timestamp: <number>, reference: <number> }
 ```
 
 **duration:**
+
 ```yaml
 input: { seconds: <number>, options?: { compact?: bool, max_units?: int } }
 ```
 
 **parse_duration:**
+
 ```yaml
-input: "<string>"  # Direct string input, not an object
+input: '<string>' # Direct string input, not an object
 ```
 
 **human_date:**
+
 ```yaml
 input: { timestamp: <number>, reference: <number> }
 ```
 
 **date_range:**
+
 ```yaml
 input: { start: <number>, end: <number> }
 ```
@@ -323,14 +346,16 @@ input: { start: <number>, end: <number> }
 ### Test generation example
 
 Given this tests.yaml entry:
+
 ```yaml
 timeago:
-  - name: "2 minutes ago - 90 seconds"
+  - name: '2 minutes ago - 90 seconds'
     input: { timestamp: 1704067110, reference: 1704067200 }
-    output: "2 minutes ago"
+    output: '2 minutes ago'
 ```
 
 Generate (Python):
+
 ```python
 def test_timeago_2_minutes_ago_90_seconds():
     result = timeago(1704067110, reference=1704067200)
@@ -338,6 +363,7 @@ def test_timeago_2_minutes_ago_90_seconds():
 ```
 
 Generate (TypeScript):
+
 ```typescript
 test('timeago: 2 minutes ago - 90 seconds', () => {
   expect(timeago(1704067110, 1704067200)).toBe('2 minutes ago');
@@ -345,6 +371,7 @@ test('timeago: 2 minutes ago - 90 seconds', () => {
 ```
 
 Generate (Rust):
+
 ```rust
 #[test]
 fn test_timeago_2_minutes_ago_90_seconds() {
@@ -358,12 +385,13 @@ For entries with `error: true`:
 
 ```yaml
 parse_duration:
-  - name: "error - empty string"
-    input: ""
+  - name: 'error - empty string'
+    input: ''
     error: true
 ```
 
 Generate (Python):
+
 ```python
 def test_parse_duration_error_empty_string():
     with pytest.raises(ValueError):
@@ -371,15 +399,17 @@ def test_parse_duration_error_empty_string():
 ```
 
 Generate (TypeScript):
+
 ```typescript
 test('parse_duration: error - empty string', () => {
-  expect(() => parse_duration("")).toThrow();
+  expect(() => parse_duration('')).toThrow();
 });
 ```
 
 ### Additional tests
 
 Implementations MAY include additional tests beyond tests.yaml, but:
+
 - All tests.yaml tests MUST pass unchanged
 - Additional tests must not contradict spec behavior
 - Edge cases not covered by tests.yaml are implementation-defined
