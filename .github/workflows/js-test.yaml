@@ -1,4 +1,4 @@
-name: JS Tests
+name: JS - Test
 
 on:
   push:
@@ -6,12 +6,14 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
-    name: JS Tests
+    name: JS - Test
     runs-on: ubuntu-slim
-    permissions:
-      contents: read
+
     defaults:
       run:
         working-directory: js
