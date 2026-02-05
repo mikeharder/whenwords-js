@@ -36,10 +36,14 @@ jobs:
     - name: Setup actionlint matcher
       run: echo "::add-matcher::.github/actionlint-matcher.json"
     
-    - name: Install actionlint
+    - name: Install actionlint and shellcheck
       run: |
+        # Install actionlint
         curl -sSL https://github.com/rhysd/actionlint/releases/download/v1.7.10/actionlint_1.7.10_linux_amd64.tar.gz | tar -xz
         sudo mv actionlint /usr/local/bin/
+        # Install shellcheck for linting shell scripts in workflows
+        sudo apt-get update -qq
+        sudo apt-get install -y shellcheck
     
     - name: Run actionlint
       run: actionlint -color -verbose
@@ -171,6 +175,25 @@ For additional security, checksum verification could be added:
     tar -xzf actionlint.tar.gz
     sudo mv actionlint /usr/local/bin/
 ```
+
+### Optional Tool Integration: shellcheck and pyflakes
+
+Actionlint can optionally integrate with **shellcheck** (for shell scripts) and **pyflakes** (for Python scripts) to provide deeper linting of `run:` blocks in workflows.
+
+**Shellcheck**: Installed in this repository to lint shell scripts like those in `js-perf.yaml`. On ubuntu-slim, shellcheck must be explicitly installed as it's not pre-installed:
+
+```yaml
+sudo apt-get update -qq
+sudo apt-get install -y shellcheck
+```
+
+**Pyflakes**: Not installed in this repository as there are no Python scripts in the workflows. If Python scripts are added to workflows in the future, install pyflakes:
+
+```yaml
+sudo apt-get install -y python3-pyflakes
+```
+
+When these tools are not available, actionlint simply skips those checks without failing. The verbose output will show: `Rule "pyflakes" was disabled: exec: "pyflakes": executable file not found in $PATH`.
 
 ## References
 
