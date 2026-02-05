@@ -55,8 +55,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cd "$GITHUB_WORKSPACE"
-          COMMENT_BODY=$(cat js/test-summary.txt)
-          gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+          {
+            echo "## 🧪 JS Test Results"
+            echo ""
+            cat js/test-summary.txt
+          } > pr-comment.txt
+          gh pr comment ${{ github.event.pull_request.number }} --body-file pr-comment.txt
 
       - name: pnpm run lint
         run: pnpm run lint
