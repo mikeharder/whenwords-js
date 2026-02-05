@@ -35,7 +35,7 @@ jobs:
           {
             echo '## Vitest Summary'
             echo '```text'
-            awk '/Test Files/{flag=1} flag{print} /Duration/{flag=0}' vitest-output.txt
+            awk '/Test Files/{flag=1} flag{print} /Duration/{flag=0}' vitest-output.txt | sed 's/\x1b\[[0-9;]*m//g'
             echo '```'
             echo '## Coverage Report'
             echo '```text'
