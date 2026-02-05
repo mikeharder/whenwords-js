@@ -47,7 +47,7 @@ jobs:
             echo '```text'
             cat coverage/coverage.txt
             echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY" > test-summary.txt
+          } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
 
       - name: Post PR comment with test results
         if: github.event_name == 'pull_request'
