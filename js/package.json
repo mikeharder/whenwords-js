@@ -11,7 +11,7 @@
     "perf": "node perf/perf.js",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
-    "web": "http-server web -p 8000"
+    "web": "serve web -l 8000"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
@@ -19,7 +19,7 @@
     "cross-env": "^10.1.0",
     "eslint": "9.39.2",
     "globals": "^17.2.0",
-    "http-server": "^14.1.1",
+    "serve": "^14.2.4",
     "js-yaml": "^4.1.1",
     "prettier": "3.8.1",
     "tinybench": "^6.0.0",
