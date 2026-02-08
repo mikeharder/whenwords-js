@@ -1,27 +1,7 @@
-import js from '@eslint/js';
-import globals from 'globals';
+import { defineBaseConfig } from './eslint.base.config.js';
 
-export default [
-  js.configs.recommended,
-  {
-    ignores: ['coverage/**'],
-  },
-  {
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      globals: globals.node,
-    },
-    rules: {
-      // Minimal, reasonable rules - warn about unused vars instead of error
-      'no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-    },
-  },
-];
+export default defineBaseConfig({
+  // ensures the tsconfig path resolves relative to this file (so cannot be defined in base file)
+  // default is process.cwd() when running eslint, which may be incorrect
+  tsconfigRootDir: import.meta.dirname,
+});

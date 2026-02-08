@@ -1,0 +1,1 @@
+{"root":["./eslint.base.config.js","./eslint.config.js","./vitest.config.js","./perf/perf.js","./src/whenwords.js","./test/extra.test.js","./test/whenwords.test.js"],"version":"5.9.3"}
