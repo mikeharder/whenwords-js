@@ -173,6 +173,22 @@ const SECONDS_PER_WEEK = 7 * SECONDS_PER_DAY;
 const SECONDS_PER_HOUR = 3600;
 const SECONDS_PER_MINUTE = 60;
 
+// Month names for date formatting
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 // Pre-compiled regex for parseDuration - single pass to capture all units
 // Matches: number + unit name (e.g., "2 hours", "3h")
 // Uses (?![a-z]) negative lookahead for single-letter units to prevent matching as prefixes
@@ -302,20 +318,6 @@ function humanDate(timestamp, reference) {
     'Friday',
     'Saturday',
   ];
-  const monthName = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
 
   // Same day
   if (tYear === rYear && tMonth === rMonth && tDay === rDay) {
@@ -359,11 +361,11 @@ function humanDate(timestamp, reference) {
 
   // Same year
   if (tYear === rYear) {
-    return `${monthName[tMonth]} ${tDay}`;
+    return `${MONTH_NAMES[tMonth]} ${tDay}`;
   }
 
   // Different year
-  return `${monthName[tMonth]} ${tDay}, ${tYear}`;
+  return `${MONTH_NAMES[tMonth]} ${tDay}, ${tYear}`;
 }
 
 /**
@@ -384,24 +386,9 @@ function dateRange(start, end) {
   const [startYear, startMonth, startDay] = getDateParts(ts);
   const [endYear, endMonth, endDay] = getDateParts(te);
 
-  const monthName = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
   const formatDate = (year, month, day) =>
-    `${monthName[month]} ${day}, ${year}`;
-  const formatDateNoYear = (month, day) => `${monthName[month]} ${day}`;
+    `${MONTH_NAMES[month]} ${day}, ${year}`;
+  const formatDateNoYear = (month, day) => `${MONTH_NAMES[month]} ${day}`;
 
   // Same day
   if (startYear === endYear && startMonth === endMonth && startDay === endDay) {
