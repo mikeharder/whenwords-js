@@ -5,7 +5,8 @@ version: '0.1.0'
 
 timeago:
   - name: 'valid ISO 8601 string timestamp'
-    input: { timestamp: '2024-01-01T00:00:00Z', reference: '2024-01-01T03:00:00Z' }
+    input:
+      { timestamp: '2024-01-01T00:00:00Z', reference: '2024-01-01T03:00:00Z' }
     output: '3 hours ago'
 
   - name: 'timeago with omitted reference uses timestamp as reference'
