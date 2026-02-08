@@ -33,7 +33,7 @@ jobs:
       - name: pnpm run test:ci
         run: |
           set -o pipefail
-          pnpm vitest run --coverage --reporter=verbose --reporter=json --outputFile.json=test-results.json | tee vitest-output.txt
+          pnpm run test:ci | tee vitest-output.txt
           {
             echo '## Vitest Summary'
             echo '```text'
@@ -47,19 +47,7 @@ jobs:
             echo '<summary>📋 Full Test List (click to expand)</summary>'
             echo ''
             echo '```text'
-            node -e "
-              const fs = require('fs');
-              const data = JSON.parse(fs.readFileSync('test-results.json', 'utf8'));
-              data.testResults.forEach(file => {
-                file.assertionResults.forEach(test => {
-                  const fullTitle = test.ancestorTitles.length > 0 
-                    ? test.ancestorTitles.join(' > ') + ' > ' + test.title
-                    : test.title;
-                  const status = test.status === 'passed' ? '✓' : '✗';
-                  console.log(\`\${status} \${fullTitle}\`);
-                });
-              });
-            "
+            sed 's/\x1b\[[0-9;]*m//g' vitest-output.txt
             echo '```'
             echo '</details>'
           } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
