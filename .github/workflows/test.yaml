@@ -56,10 +56,6 @@ jobs:
         run: |
           set -o pipefail
           pnpm run lint 2>&1 | tee lint-output.txt || echo "Lint failed with exit code $?"
-
-      - name: Add lint output to test summary
-        if: always()
-        run: |
           {
             echo '<details>'
             echo '<summary>🔍 Lint Output (click to expand)</summary>'
