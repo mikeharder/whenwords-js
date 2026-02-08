@@ -67,7 +67,18 @@ jobs:
           } >> test-summary.txt
 
       - name: pnpm run format:check
-        run: pnpm run format:check
+        run: |
+          set -o pipefail
+          pnpm run format:check 2>&1 | tee format-output.txt
+          {
+            echo '<details>'
+            echo '<summary>📝 Format Check (click to expand)</summary>'
+            echo ''
+            echo '```text'
+            sed 's/\x1b\[[0-9;]*m//g' format-output.txt
+            echo '```'
+            echo '</details>'
+          } >> test-summary.txt
 
       # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
       - name: Setup actionlint matcher
