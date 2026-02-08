@@ -33,8 +33,7 @@ jobs:
       - name: pnpm run test:ci
         run: |
           set -o pipefail
-          pnpm run test:ci | tee vitest-output.txt
-          pnpm vitest run --reporter=json --outputFile=test-results.json
+          pnpm vitest run --coverage --reporter=verbose --reporter=json --outputFile.json=test-results.json | tee vitest-output.txt
           {
             echo '## Vitest Summary'
             echo '```text'
