@@ -44,7 +44,7 @@ jobs:
             cat coverage/coverage.txt
             echo '```'
             echo '<details>'
-            echo '<summary>📋 Full Log (click to expand)</summary>'
+            echo '<summary>📋 Full Test Log (click to expand)</summary>'
             echo ''
             echo '```text'
             sed 's/\x1b\[[0-9;]*m//g' vitest-output.txt
@@ -53,7 +53,18 @@ jobs:
           } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
 
       - name: pnpm run lint
-        run: pnpm run lint
+        run: |
+          set -o pipefail
+          pnpm run lint 2>&1 | tee lint-output.txt || echo "Lint failed with exit code $?"
+          {
+            echo '<details>'
+            echo '<summary>🔍 Lint Output (click to expand)</summary>'
+            echo ''
+            echo '```text'
+            sed 's/\x1b\[[0-9;]*m//g' lint-output.txt
+            echo '```'
+            echo '</details>'
+          } >> test-summary.txt
 
       - name: pnpm run format:check
         run: |
