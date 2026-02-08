@@ -4,6 +4,11 @@ version: '0.1.0'
 # These tests cover JavaScript-specific functionality and edge cases
 
 timeago:
+  - name: 'valid ISO 8601 string timestamp'
+    input:
+      { timestamp: '2024-01-01T00:00:00Z', reference: '2024-01-01T03:00:00Z' }
+    output: '3 hours ago'
+
   - name: 'timeago with omitted reference uses timestamp as reference'
     input: { timestamp: 1609459200 }
     output: 'just now'
@@ -16,7 +21,7 @@ timeago:
     input: { timestamp: 1710507600, reference: 1710514800 }
     output: '2 hours ago'
 
-  - name: 'error - string timestamp'
+  - name: 'error - invalid string timestamp'
     input: { timestamp: 'invalid-date-string', reference: 1609459200 }
     error: true
 
