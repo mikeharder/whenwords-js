@@ -1,0 +1,98 @@
+version: '0.1.0'
+
+# JavaScript-specific tests that extend the core spec tests
+# These tests cover JavaScript-specific functionality and edge cases
+
+timeago:
+  - name: 'valid ISO 8601 string timestamp'
+    input:
+      { timestamp: '2024-01-01T00:00:00Z', reference: '2024-01-01T03:00:00Z' }
+    output: '3 hours ago'
+
+  - name: 'timeago with omitted reference uses timestamp as reference'
+    input: { timestamp: 1609459200 }
+    output: 'just now'
+
+  - name: 'Date object equivalents - 3 hours ago'
+    input: { timestamp: 1710504000, reference: 1710514800 }
+    output: '3 hours ago'
+
+  - name: 'Date object equivalents - 2 hours ago'
+    input: { timestamp: 1710507600, reference: 1710514800 }
+    output: '2 hours ago'
+
+  - name: 'error - invalid string timestamp'
+    input: { timestamp: 'invalid-date-string', reference: 1609459200 }
+    error: true
+
+  - name: 'error - null timestamp'
+    input: { timestamp: null, reference: 1609459200 }
+    error: true
+
+  - name: 'error - array timestamp'
+    input: { timestamp: [1, 2, 3], reference: 1609459200 }
+    error: true
+
+  - name: 'error - object timestamp'
+    input: { timestamp: { time: 123 }, reference: 1609459200 }
+    error: true
+
+duration:
+  - name: 'rounding up when fraction >= 0.5 in non-compact mode'
+    input: { seconds: 6000, options: { max_units: 1 } }
+    output: '2 hours'
+
+  - name: 'no rounding when fraction < 0.5 in non-compact mode'
+    input: { seconds: 4800, options: { max_units: 1 } }
+    output: '1 hour'
+
+  - name: 'rounding up in compact mode'
+    input: { seconds: 90, options: { compact: true, max_units: 1 } }
+    output: '2m'
+
+  - name: 'last displayed unit is seconds'
+    input: { seconds: 45, options: { max_units: 1 } }
+    output: '45 seconds'
+
+parse_duration:
+  - name: 'overlapping matches - 5m30s'
+    input: '5m30s'
+    output: 330
+
+  - name: 'potential overlapping regex matches - 5 min 30 s'
+    input: '5 min 30 s'
+    output: 330
+
+  - name: 'complex mixed units - 2y 3mo 5d 12h 30m 45s'
+    input: '2y 3mo 5d 12h 30m 45s'
+    output: 63549045
+
+  - name: 'error - negative value'
+    input: '- 5 hours'
+    error: true
+
+  - name: 'error - whitespace-only string'
+    input: '   '
+    error: true
+
+  - name: 'error - non-string input'
+    input: 123
+    error: true
+
+human_date:
+  - name: 'humanDate with omitted reference uses timestamp as reference'
+    input: { timestamp: 1609459200 }
+    output: 'Today'
+
+  - name: 'Date object equivalent - today'
+    input: { timestamp: 1710460800, reference: 1710504000 }
+    output: 'Today'
+
+  - name: 'past week edge case - targetDay does not go negative'
+    input: { timestamp: 1704326400, reference: 1704499200 }
+    output: 'Last Thursday'
+
+date_range:
+  - name: 'Date object equivalent - March 15-20, 2024'
+    input: { start: 1710460800, end: 1710892800 }
+    output: 'March 15–20, 2024'
