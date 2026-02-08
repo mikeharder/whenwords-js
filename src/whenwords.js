@@ -1,3 +1,5 @@
+import { inspect } from 'node:util';
+
 /**
  * Normalize a timestamp to Unix seconds
  * @param {number|string} timestamp - Unix seconds, ISO 8601 string, or Date
@@ -19,7 +21,7 @@ function normalizeTimestamp(timestamp) {
   if (timestamp instanceof Date) {
     return Math.floor(timestamp.getTime() / 1000);
   }
-  throw new Error(`Invalid timestamp format: ${timestamp}`);
+  throw new Error(`Invalid timestamp format: ${inspect(timestamp)}`);
 }
 
 /**
