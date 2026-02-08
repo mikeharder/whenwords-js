@@ -75,7 +75,7 @@ jobs:
             echo '<summary>📝 Format Check (click to expand)</summary>'
             echo ''
             echo '```text'
-            cat format-output.txt
+            sed 's/\x1b\[[0-9;]*m//g' format-output.txt
             echo '```'
             echo '</details>'
           } >> test-summary.txt
