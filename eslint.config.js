@@ -24,7 +24,7 @@ export default defineConfig(
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      '@typescript-eslint/restrict-template-expressions': 'warn',
+      '@typescript-eslint/restrict-template-expressions': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {

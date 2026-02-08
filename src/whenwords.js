@@ -19,7 +19,7 @@ function normalizeTimestamp(timestamp) {
   if (timestamp instanceof Date) {
     return Math.floor(timestamp.getTime() / 1000);
   }
-  throw new Error(`Invalid timestamp format: ${timestamp}`);
+  throw new Error(`Invalid timestamp format: ${String(timestamp)}`);
 }
 
 /**
