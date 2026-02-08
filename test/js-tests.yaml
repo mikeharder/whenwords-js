@@ -5,7 +5,7 @@ version: '0.1.0'
 
 timeago:
   - name: 'valid ISO 8601 string timestamp'
-    input: { timestamp: 1704067200, reference: 1704078000 }
+    input: { timestamp: '2024-01-01T00:00:00Z', reference: '2024-01-01T03:00:00Z' }
     output: '3 hours ago'
 
   - name: 'timeago with omitted reference uses timestamp as reference'
@@ -19,6 +19,22 @@ timeago:
   - name: 'Date object equivalents - 2 hours ago'
     input: { timestamp: 1710507600, reference: 1710514800 }
     output: '2 hours ago'
+
+  - name: 'error - invalid string timestamp'
+    input: { timestamp: 'invalid-date-string', reference: 1609459200 }
+    error: true
+
+  - name: 'error - null timestamp'
+    input: { timestamp: null, reference: 1609459200 }
+    error: true
+
+  - name: 'error - array timestamp'
+    input: { timestamp: [1, 2, 3], reference: 1609459200 }
+    error: true
+
+  - name: 'error - object timestamp'
+    input: { timestamp: { time: 123 }, reference: 1609459200 }
+    error: true
 
 duration:
   - name: 'rounding up when fraction >= 0.5 in non-compact mode'
@@ -49,6 +65,18 @@ parse_duration:
   - name: 'complex mixed units - 2y 3mo 5d 12h 30m 45s'
     input: '2y 3mo 5d 12h 30m 45s'
     output: 63549045
+
+  - name: 'error - negative value'
+    input: '- 5 hours'
+    error: true
+
+  - name: 'error - whitespace-only string'
+    input: '   '
+    error: true
+
+  - name: 'error - non-string input'
+    input: 123
+    error: true
 
 human_date:
   - name: 'humanDate with omitted reference uses timestamp as reference'

@@ -39,11 +39,19 @@ describe('timeago', () => {
 
 describe('timeago (js-specific)', () => {
   for (const test of jsTests.timeago || []) {
-    it(test.name, () => {
-      expect(timeago(test.input.timestamp, test.input.reference)).toBe(
-        test.output
-      );
-    });
+    if (test.error) {
+      it(test.name, () => {
+        expect(() =>
+          timeago(test.input.timestamp, test.input.reference)
+        ).toThrow();
+      });
+    } else {
+      it(test.name, () => {
+        expect(timeago(test.input.timestamp, test.input.reference)).toBe(
+          test.output
+        );
+      });
+    }
   }
 });
 
