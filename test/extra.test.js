@@ -10,28 +10,27 @@ describe('extra coverage tests', () => {
       );
     });
 
-    // Temporarily commented out to demonstrate coverage failure
-    // it('should handle Date object as timestamp', () => {
-    //   const date = new Date('2024-03-15T12:00:00Z');
-    //   const refDate = new Date('2024-03-15T15:00:00Z');
-    //   expect(timeago(date, refDate)).toBe('3 hours ago');
-    // });
+    it('should handle Date object as timestamp', () => {
+      const date = new Date('2024-03-15T12:00:00Z');
+      const refDate = new Date('2024-03-15T15:00:00Z');
+      expect(timeago(date, refDate)).toBe('3 hours ago');
+    });
 
-    // it('should handle Date object as reference', () => {
-    //   const refDate = new Date('2024-03-15T15:00:00Z');
-    //   expect(timeago(1710507600, refDate)).toBe('2 hours ago');
-    // });
+    it('should handle Date object as reference', () => {
+      const refDate = new Date('2024-03-15T15:00:00Z');
+      expect(timeago(1710507600, refDate)).toBe('2 hours ago');
+    });
 
-    // it('should handle Date objects in humanDate', () => {
-    //   const date = new Date('2024-03-15T00:00:00Z');
-    //   const ref = new Date('2024-03-15T12:00:00Z');
-    //   expect(humanDate(date, ref)).toBe('Today');
-    // });
+    it('should handle Date objects in humanDate', () => {
+      const date = new Date('2024-03-15T00:00:00Z');
+      const ref = new Date('2024-03-15T12:00:00Z');
+      expect(humanDate(date, ref)).toBe('Today');
+    });
 
-    // it('should handle Date objects in dateRange', () => {
-    //   const start = new Date('2024-03-15T00:00:00Z');
-    //   const end = new Date('2024-03-20T00:00:00Z');
-    //   expect(dateRange(start, end)).toBe('March 15–20, 2024');
-    // });
+    it('should handle Date objects in dateRange', () => {
+      const start = new Date('2024-03-15T00:00:00Z');
+      const end = new Date('2024-03-20T00:00:00Z');
+      expect(dateRange(start, end)).toBe('March 15–20, 2024');
+    });
   });
 });
