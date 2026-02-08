@@ -2,6 +2,9 @@ node_modules/
 coverage/
 *.log
 
+# TypeScript build info
+tsconfig.tsbuildinfo
+
 # copied as part of pages deployment
 web/whenwords.js
 
