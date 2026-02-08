@@ -44,7 +44,7 @@ jobs:
             cat coverage/coverage.txt
             echo '```'
             echo '<details>'
-            echo '<summary>📋 Full Test List (click to expand)</summary>'
+            echo '<summary>📋 Full Log (click to expand)</summary>'
             echo ''
             echo '```text'
             sed 's/\x1b\[[0-9;]*m//g' vitest-output.txt
