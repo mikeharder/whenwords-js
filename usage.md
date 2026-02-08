@@ -47,7 +47,7 @@ Returns a human-readable relative time string.
 
 **Parameters:**
 
-- `timestamp` — Event timestamp (Unix seconds)
+- `timestamp` — Event timestamp (Unix seconds, ISO 8601 string, or Date object)
 - `reference` — Current time for comparison (defaults to timestamp, so identical timestamps return "just now")
 
 **Examples:**
@@ -111,7 +111,7 @@ Returns a contextual date string.
 
 **Parameters:**
 
-- `timestamp` — Date to format (Unix seconds)
+- `timestamp` — Date to format (Unix seconds, ISO 8601 string, or Date)
 - `reference` — Current date for comparison
 
 **Examples:**
@@ -132,8 +132,8 @@ Formats a date range with smart abbreviation.
 
 **Parameters:**
 
-- `start` — Start timestamp (Unix seconds)
-- `end` — End timestamp (Unix seconds)
+- `start` — Start timestamp (Unix seconds, ISO 8601 string, or Date)
+- `end` — End timestamp
 
 **Examples:**
 
@@ -163,7 +163,7 @@ try {
 
 ## Accepted types
 
-- **timestamp parameters:** Unix seconds (number)
+- **timestamp parameters:** Unix seconds (number), ISO 8601 string, or JavaScript `Date` object
 - **seconds parameters:** Any non-negative number (integer or float)
 - **string parameters:** UTF-8 text
 
