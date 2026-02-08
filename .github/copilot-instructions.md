@@ -192,6 +192,10 @@ The repository uses GitHub Actions for CI:
 - **PR comments** — For PR events, post step summary content as PR comments using GitHub CLI for easier review. Use a distinct header (e.g., "🧪 Test Results") to identify the comment, then search for and update existing comments instead of creating new ones each time. This keeps PR conversations clean.
 - **Coverage reporting** — Use Vitest's built-in text reporter with `file` option to write coverage directly to a file (e.g., `coverage/coverage.txt`), then read it in the workflow
 - **No custom scripts** — Prefer configuring tools (like Vitest) to generate output in the desired format rather than writing custom parsing scripts
+- **ANSI color stripping** — Always strip ANSI color codes from command output before including in PR comments using `sed 's/\x1b\[[0-9;]*m//g'`. This applies to test output, lint output, and format check output.
+- **Composite actions** — Extract duplicate workflow steps (like PR commenting logic) into composite actions in `.github/actions/` directory for reusability across workflows
+- **PR comment structure** — Use collapsible `<details>` sections to include comprehensive output (full test logs, lint results, format checks) without cluttering the default PR view. Main summary should be visible by default.
+- **Coverage thresholds** — Configure coverage thresholds in `vitest.config.js` under a nested `thresholds` object to enforce 100% coverage requirements. Tests will fail if any metric (lines, functions, branches, statements) drops below threshold.
 
 ### Workflow Naming Conventions
 
