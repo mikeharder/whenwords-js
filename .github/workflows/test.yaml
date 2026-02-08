@@ -43,6 +43,13 @@ jobs:
             echo '```text'
             cat coverage/coverage.txt
             echo '```'
+            echo '<details>'
+            echo '<summary>📋 Full Log (click to expand)</summary>'
+            echo ''
+            echo '```text'
+            sed 's/\x1b\[[0-9;]*m//g' vitest-output.txt
+            echo '```'
+            echo '</details>'
           } | tee "$GITHUB_STEP_SUMMARY" > test-summary.txt
 
       - name: pnpm run lint
