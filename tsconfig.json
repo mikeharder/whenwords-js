@@ -4,7 +4,6 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
-    "incremental": false,
     "noEmit": true
   },
   "exclude": ["coverage"]
