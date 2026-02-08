@@ -1,23 +1,12 @@
 /**
  * Normalize a timestamp to Unix seconds
- * @param {number|string} timestamp - Unix seconds, ISO 8601 string, or Date
+ * @param {number} timestamp - Unix seconds
  * @returns {number} Unix seconds
- * @throws {Error} If timestamp format is invalid
+ * @throws {Error} If timestamp is not a number
  */
 function normalizeTimestamp(timestamp) {
   if (typeof timestamp === 'number') {
     return timestamp;
-  }
-  if (typeof timestamp === 'string') {
-    // Parse ISO 8601
-    const date = new Date(timestamp);
-    if (isNaN(date.getTime())) {
-      throw new Error(`Invalid timestamp format: ${timestamp}`);
-    }
-    return Math.floor(date.getTime() / 1000);
-  }
-  if (timestamp instanceof Date) {
-    return Math.floor(timestamp.getTime() / 1000);
   }
   throw new Error(`Invalid timestamp format: ${timestamp}`);
 }
@@ -31,8 +20,8 @@ function roundHalfUp(n) {
 
 /**
  * Returns a human-readable relative time string
- * @param {number|string} timestamp - The event timestamp
- * @param {number|string} [reference] - Reference timestamp (defaults to timestamp)
+ * @param {number} timestamp - The event timestamp (Unix seconds)
+ * @param {number} [reference] - Reference timestamp (Unix seconds, defaults to timestamp)
  * @returns {string} Relative time string like "3 hours ago" or "just now"
  */
 function timeago(timestamp, reference) {
@@ -279,8 +268,8 @@ function getDateParts(timestamp) {
 
 /**
  * Returns a contextual date string
- * @param {number|string} timestamp - The date to format
- * @param {number|string} [reference] - Reference date for comparison
+ * @param {number} timestamp - The date to format (Unix seconds)
+ * @param {number} [reference] - Reference date for comparison (Unix seconds)
  * @returns {string} Contextual date like "Today", "Yesterday", "Last Friday", or "March 5, 2024"
  */
 function humanDate(timestamp, reference) {
@@ -366,8 +355,8 @@ function humanDate(timestamp, reference) {
 
 /**
  * Formats a date range with smart abbreviation
- * @param {number|string} start - Start timestamp
- * @param {number|string} end - End timestamp
+ * @param {number} start - Start timestamp (Unix seconds)
+ * @param {number} end - End timestamp (Unix seconds)
  * @returns {string} Formatted date range
  */
 function dateRange(start, end) {
