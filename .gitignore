@@ -10,3 +10,7 @@ web/whenwords.js
 
 # actionlint binary
 actionlint
+
+# test output files
+vitest-output.txt
+test-summary.txt
