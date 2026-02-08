@@ -46,8 +46,14 @@ pnpm test
 # Run tests with coverage (used in CI)
 pnpm run test:ci
 
-# Run linting
+# Run linting (runs both eslint and tsc)
 pnpm run lint
+
+# Run only ESLint
+pnpm run lint:eslint
+
+# Run only TypeScript type-checking
+pnpm run lint:tsc
 
 # Format code
 pnpm run format
@@ -72,7 +78,12 @@ pnpm run web
 - **Module system**: ES modules (`import`/`export`)
 - **Node.js version**: Modern Node.js with ES2022+ features
 - **Prettier**: Single quotes, semicolons, trailing commas (ES5)
-- **ESLint**: Minimal rules, warns on unused variables (use `_` prefix for intentionally unused)
+- **ESLint**: TypeScript ESLint enabled for JavaScript files with type-aware linting
+  - Unsafe type operations produce warnings (not errors) to allow gradual improvements
+  - Use `_` prefix for intentionally unused variables
+- **TypeScript**: Used only for type-checking JavaScript (no TypeScript sources)
+  - tsconfig.json configured with `allowJs: true` and `checkJs: false`
+  - Type-aware linting via TS-eslint provides type-safety warnings
 - **JSDoc comments**: Use JSDoc for public functions
 
 ### Testing
@@ -117,8 +128,9 @@ All implementations must:
 
 - **NEVER modify files in the `/spec/` folder** — The spec folder contains the formal specification and is maintained separately. It is excluded from prettier formatting (see `.prettierignore`). Only read from spec files, never write to them.
 - Run `pnpm test` to ensure spec compliance
-- **ALWAYS run `pnpm run check` before considering a change "done"** — This verifies tests, linting, and formatting all pass
+- **ALWAYS run `pnpm run check` before considering a change "done"** — This verifies tests, linting (ESLint + TypeScript), and formatting all pass
 - **Formatting is required** — All code must pass `pnpm run format:check` before committing. Run `pnpm run format` to auto-fix formatting issues.
+- **Type-safety warnings** — TypeScript ESLint provides type-safety warnings (not errors). Address warnings when practical, especially for new code.
 - Keep functions pure and deterministic
 - Update `/usage.md` if API changes
 - Add tests to `/spec/tests.yaml` for new spec behaviors (cross-language)
