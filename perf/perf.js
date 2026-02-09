@@ -14,12 +14,57 @@ import yaml from 'js-yaml';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * @typedef {Object} TimeagoTest
+ * @property {string} name
+ * @property {{ timestamp: number | string, reference?: number | string }} input
+ * @property {string} output
+ */
+
+/**
+ * @typedef {Object} DurationTest
+ * @property {string} name
+ * @property {{ seconds: number, options?: { compact?: boolean, max_units?: number } }} input
+ * @property {string} output
+ */
+
+/**
+ * @typedef {Object} ParseDurationTest
+ * @property {string} name
+ * @property {string} input
+ * @property {number} output
+ */
+
+/**
+ * @typedef {Object} HumanDateTest
+ * @property {string} name
+ * @property {{ timestamp: number | string, reference?: number | string }} input
+ * @property {string} output
+ */
+
+/**
+ * @typedef {Object} DateRangeTest
+ * @property {string} name
+ * @property {{ start: number | string, end: number | string }} input
+ * @property {string} output
+ */
+
+/**
+ * @typedef {Object} TestSuite
+ * @property {TimeagoTest[]} timeago
+ * @property {DurationTest[]} duration
+ * @property {ParseDurationTest[]} parse_duration
+ * @property {HumanDateTest[]} human_date
+ * @property {DateRangeTest[]} date_range
+ */
+
 // Load tests from YAML file
 const testsYaml = fs.readFileSync(
   path.join(__dirname, '..', 'spec', 'tests.yaml'),
   'utf8'
 );
-const tests = /** @type {unknown} */ (yaml.load(testsYaml));
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const tests = /** @type {TestSuite} */ (yaml.load(testsYaml));
 
 const bench = new Bench({ time: 50, warmupTime: 10 });
 

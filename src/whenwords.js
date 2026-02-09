@@ -26,6 +26,8 @@ function normalizeTimestamp(timestamp) {
 
 /**
  * Round to nearest integer using half-up rounding (2.5 -> 3)
+ * @param {number} n - The number to round
+ * @returns {number}
  */
 function roundHalfUp(n) {
   return Math.floor(n + 0.5);
@@ -275,6 +277,7 @@ function parseDuration(input) {
     const value = parseFloat(match[1]);
     const unit = match[2]; // Already lowercase from working string
     // All units matched by the regex are guaranteed to be in UNIT_DIVISORS
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const divisor = /** @type {number} */ (UNIT_DIVISORS[unit]);
     totalSeconds += value * divisor;
     foundAnyUnit = true;
