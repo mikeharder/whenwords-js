@@ -131,11 +131,12 @@ function duration(seconds, options = {}) {
   // Handle rounding for the smallest displayed unit
   if (parts.length > 0 && parts.length === maxUnits && remaining > 0) {
     // Get the last unit's divisor
+    const lastPart = parts[parts.length - 1];
     const lastUnitIndex = units.findIndex((u) => {
       if (compact) {
-        return parts[parts.length - 1].includes(u.shortName);
+        return lastPart.includes(u.shortName);
       } else {
-        return parts[parts.length - 1].includes(u.name);
+        return lastPart.includes(u.name);
       }
     });
 
@@ -288,7 +289,9 @@ function parseDuration(input) {
 }
 
 /**
- * Gets an array of [year, month, day] from Unix timestamp (UTC)
+ * Gets an array of [year, month, day, dayOfWeek] from Unix timestamp (UTC)
+ * @param {number} timestamp - Unix timestamp in seconds
+ * @returns {[number, number, number, number]} Array of [year, month (0-11), day, dayOfWeek]
  */
 function getDateParts(timestamp) {
   const date = new Date(timestamp * 1000);
@@ -391,8 +394,19 @@ function dateRange(start, end) {
   const [startYear, startMonth, startDay] = getDateParts(ts);
   const [endYear, endMonth, endDay] = getDateParts(te);
 
+  /**
+   * @param {number} year
+   * @param {number} month - Month index (0-11) from getUTCMonth()
+   * @param {number} day
+   * @returns {string}
+   */
   const formatDate = (year, month, day) =>
     `${MONTH_NAMES[month]} ${day}, ${year}`;
+  /**
+   * @param {number} month - Month index (0-11) from getUTCMonth()
+   * @param {number} day
+   * @returns {string}
+   */
   const formatDateNoYear = (month, day) => `${MONTH_NAMES[month]} ${day}`;
 
   // Same day

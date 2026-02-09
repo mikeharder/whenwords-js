@@ -14,25 +14,78 @@ import yaml from 'js-yaml';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * @typedef {Object} TimeagoTestInput
+ * @property {number|string} timestamp
+ * @property {number|string} [reference]
+ */
+
+/**
+ * @typedef {Object} DurationOptions
+ * @property {boolean} [compact]
+ * @property {number} [max_units]
+ */
+
+/**
+ * @typedef {Object} DurationTestInput
+ * @property {number} seconds
+ * @property {DurationOptions} [options]
+ */
+
+/**
+ * @typedef {Object} ParseDurationTestInput
+ * @property {string} input
+ */
+
+/**
+ * @typedef {Object} HumanDateTestInput
+ * @property {number} timestamp
+ * @property {number} reference
+ */
+
+/**
+ * @typedef {Object} DateRangeTestInput
+ * @property {number} start
+ * @property {number} end
+ */
+
+/**
+ * @typedef {Object} TestCase
+ * @property {string} name
+ * @property {TimeagoTestInput|DurationTestInput|string|HumanDateTestInput|DateRangeTestInput} input
+ * @property {string} [output]
+ * @property {boolean} [error]
+ */
+
+/**
+ * @typedef {Object} TestSuite
+ * @property {TestCase[]} timeago
+ * @property {TestCase[]} duration
+ * @property {TestCase[]} parse_duration
+ * @property {TestCase[]} human_date
+ * @property {TestCase[]} date_range
+ */
+
 // Load tests from YAML files
 const testsYaml = fs.readFileSync(
   path.join(__dirname, '..', 'spec', 'tests.yaml'),
   'utf8'
 );
-const tests = /** @type {unknown} */ (yaml.load(testsYaml));
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+const tests = /** @type {TestSuite} */ (/** @type {unknown} */ (yaml.load(testsYaml)));
 
 const jsTestsYaml = fs.readFileSync(
   path.join(__dirname, 'js-tests.yaml'),
   'utf8'
 );
-const jsTests = /** @type {unknown} */ (yaml.load(jsTestsYaml));
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+const jsTests = /** @type {TestSuite} */ (/** @type {unknown} */ (yaml.load(jsTestsYaml)));
 
 describe('timeago', () => {
   for (const test of tests.timeago) {
     it(test.name, () => {
-      expect(timeago(test.input.timestamp, test.input.reference)).toBe(
-        test.output
-      );
+      const input = /** @type {TimeagoTestInput} */ (test.input);
+      expect(timeago(input.timestamp, input.reference)).toBe(test.output);
     });
   }
 });
@@ -41,15 +94,13 @@ describe('timeago (js-specific)', () => {
   for (const test of jsTests.timeago || []) {
     if (test.error) {
       it(test.name, () => {
-        expect(() =>
-          timeago(test.input.timestamp, test.input.reference)
-        ).toThrow();
+        const input = /** @type {TimeagoTestInput} */ (test.input);
+        expect(() => timeago(input.timestamp, input.reference)).toThrow();
       });
     } else {
       it(test.name, () => {
-        expect(timeago(test.input.timestamp, test.input.reference)).toBe(
-          test.output
-        );
+        const input = /** @type {TimeagoTestInput} */ (test.input);
+        expect(timeago(input.timestamp, input.reference)).toBe(test.output);
       });
     }
   }
@@ -59,15 +110,13 @@ describe('duration', () => {
   for (const test of tests.duration) {
     if (test.error) {
       it(test.name, () => {
-        expect(() =>
-          duration(test.input.seconds, test.input.options)
-        ).toThrow();
+        const input = /** @type {DurationTestInput} */ (test.input);
+        expect(() => duration(input.seconds, input.options)).toThrow();
       });
     } else {
       it(test.name, () => {
-        expect(duration(test.input.seconds, test.input.options)).toBe(
-          test.output
-        );
+        const input = /** @type {DurationTestInput} */ (test.input);
+        expect(duration(input.seconds, input.options)).toBe(test.output);
       });
     }
   }
@@ -77,15 +126,13 @@ describe('duration (js-specific)', () => {
   for (const test of jsTests.duration || []) {
     if (test.error) {
       it(test.name, () => {
-        expect(() =>
-          duration(test.input.seconds, test.input.options)
-        ).toThrow();
+        const input = /** @type {DurationTestInput} */ (test.input);
+        expect(() => duration(input.seconds, input.options)).toThrow();
       });
     } else {
       it(test.name, () => {
-        expect(duration(test.input.seconds, test.input.options)).toBe(
-          test.output
-        );
+        const input = /** @type {DurationTestInput} */ (test.input);
+        expect(duration(input.seconds, input.options)).toBe(test.output);
       });
     }
   }
@@ -95,11 +142,13 @@ describe('parseDuration', () => {
   for (const test of tests.parse_duration) {
     if (test.error) {
       it(test.name, () => {
-        expect(() => parseDuration(test.input)).toThrow();
+        const input = /** @type {string} */ (test.input);
+        expect(() => parseDuration(input)).toThrow();
       });
     } else {
       it(test.name, () => {
-        expect(parseDuration(test.input)).toBe(test.output);
+        const input = /** @type {string} */ (test.input);
+        expect(parseDuration(input)).toBe(test.output);
       });
     }
   }
@@ -109,11 +158,13 @@ describe('parseDuration (js-specific)', () => {
   for (const test of jsTests.parse_duration || []) {
     if (test.error) {
       it(test.name, () => {
-        expect(() => parseDuration(test.input)).toThrow();
+        const input = /** @type {string} */ (test.input);
+        expect(() => parseDuration(input)).toThrow();
       });
     } else {
       it(test.name, () => {
-        expect(parseDuration(test.input)).toBe(test.output);
+        const input = /** @type {string} */ (test.input);
+        expect(parseDuration(input)).toBe(test.output);
       });
     }
   }
@@ -122,9 +173,8 @@ describe('parseDuration (js-specific)', () => {
 describe('humanDate', () => {
   for (const test of tests.human_date) {
     it(test.name, () => {
-      expect(humanDate(test.input.timestamp, test.input.reference)).toBe(
-        test.output
-      );
+      const input = /** @type {HumanDateTestInput} */ (test.input);
+      expect(humanDate(input.timestamp, input.reference)).toBe(test.output);
     });
   }
 });
@@ -132,9 +182,8 @@ describe('humanDate', () => {
 describe('humanDate (js-specific)', () => {
   for (const test of jsTests.human_date || []) {
     it(test.name, () => {
-      expect(humanDate(test.input.timestamp, test.input.reference)).toBe(
-        test.output
-      );
+      const input = /** @type {HumanDateTestInput} */ (test.input);
+      expect(humanDate(input.timestamp, input.reference)).toBe(test.output);
     });
   }
 });
@@ -142,7 +191,8 @@ describe('humanDate (js-specific)', () => {
 describe('dateRange', () => {
   for (const test of tests.date_range) {
     it(test.name, () => {
-      expect(dateRange(test.input.start, test.input.end)).toBe(test.output);
+      const input = /** @type {DateRangeTestInput} */ (test.input);
+      expect(dateRange(input.start, input.end)).toBe(test.output);
     });
   }
 });
@@ -150,7 +200,8 @@ describe('dateRange', () => {
 describe('dateRange (js-specific)', () => {
   for (const test of jsTests.date_range || []) {
     it(test.name, () => {
-      expect(dateRange(test.input.start, test.input.end)).toBe(test.output);
+      const input = /** @type {DateRangeTestInput} */ (test.input);
+      expect(dateRange(input.start, input.end)).toBe(test.output);
     });
   }
 });
