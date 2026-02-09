@@ -26,6 +26,7 @@ function fetchWorkflowRuns() {
   try {
     const cmd = `gh run list --workflow=${WORKFLOW_NAME} --branch=${BRANCH} --limit=${MAX_RUNS} --json databaseId,createdAt,conclusion,status`;
     const output = execSync(cmd, { encoding: 'utf8' });
+    // TypeScript ESLint is enabled for JS files in this project
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return JSON.parse(output);
   } catch (error) {
@@ -62,19 +63,26 @@ function parsePerformanceResults(logs) {
   const results = {};
   const lines = logs.split('\n');
 
+  // Table format constants (based on console.table output)
+  const _TABLE_INDEX_COL = 0; // Not used but kept for documentation
+  const TABLE_NAME_COL = 1;
+  const TABLE_LATENCY_AVG_COL = 2;
+
   // Find the table section in the logs
   for (const line of lines) {
     // Look for table row with actual data (starts with │)
     if (line.includes('│') && !line.includes('Task name')) {
-      // Skip header row
+      // Skip header and separator rows
       if (line.includes('(index)') || line.includes('─')) continue;
 
       // Parse the table row
       // Format: │ index │ 'Task name' │ 'latency avg' │ 'latency med' │ ...
       const parts = line.split('│').map((p) => p.trim());
       if (parts.length >= 4) {
-        const taskName = parts[2]?.replace(/'/g, '');
-        const latencyAvg = parts[3]?.replace(/'/g, '');
+        // Extract task name from column 2 (index 2 because split creates empty first element)
+        const taskName = parts[TABLE_NAME_COL + 1]?.replace(/'/g, '');
+        // Extract latency average from column 3
+        const latencyAvg = parts[TABLE_LATENCY_AVG_COL + 1]?.replace(/'/g, '');
 
         if (taskName && latencyAvg) {
           // Extract numeric value from latency (e.g., "50.75 ± 2.22%" -> 50.75)
