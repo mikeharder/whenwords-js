@@ -2,7 +2,7 @@ import { inspect } from 'node:util';
 
 /**
  * Normalize a timestamp to Unix seconds
- * @param {number|string} timestamp - Unix seconds, ISO 8601 string, or Date
+ * @param {number|string|Date} timestamp - Unix seconds, ISO 8601 string, or Date
  * @returns {number} Unix seconds
  * @throws {Error} If timestamp format is invalid
  */
@@ -131,11 +131,12 @@ function duration(seconds, options = {}) {
   // Handle rounding for the smallest displayed unit
   if (parts.length > 0 && parts.length === maxUnits && remaining > 0) {
     // Get the last unit's divisor
+    const lastPart = parts[parts.length - 1];
     const lastUnitIndex = units.findIndex((u) => {
       if (compact) {
-        return parts[parts.length - 1].includes(u.shortName);
+        return lastPart.includes(u.shortName);
       } else {
-        return parts[parts.length - 1].includes(u.name);
+        return lastPart.includes(u.name);
       }
     });
 
@@ -275,8 +276,7 @@ function parseDuration(input) {
     const value = parseFloat(match[1]);
     const unit = match[2]; // Already lowercase from working string
     // All units matched by the regex are guaranteed to be in UNIT_DIVISORS
-    const divisor = /** @type {number} */ (UNIT_DIVISORS[unit]);
-    totalSeconds += value * divisor;
+    totalSeconds += value * /** @type {number} */ (UNIT_DIVISORS[unit]);
     foundAnyUnit = true;
   }
 
