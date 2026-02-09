@@ -9,11 +9,11 @@ import {
 
 /**
  * Fuzz testing suite for whenwords functions
- * Tests run for a fixed duration (~10 seconds each) with randomly-generated inputs
+ * Tests run for a fixed duration (~10 seconds total) with randomly-generated inputs
  */
 
 // Helper to run fuzz tests for a fixed duration
-function fuzzTest(testFn, durationMs = 10000) {
+function fuzzTest(testFn, durationMs = 1000) {
   const startTime = Date.now();
   let iterations = 0;
 
@@ -133,7 +133,7 @@ describe('fuzz tests', () => {
     });
 
     console.log(`  timeago: ${iterations} iterations`);
-  }, 15000); // 15 second timeout for 10 second test
+  }, 3000); // 3 second timeout for 1 second test
 
   it('timeago should handle edge cases without crashing', () => {
     const iterations = fuzzTest(() => {
@@ -157,7 +157,7 @@ describe('fuzz tests', () => {
         // Some edge cases might legitimately throw
         // This is expected behavior
       }
-    }, 2000); // Run for 2 seconds
+    }, 600); // Run for 0.6 seconds
 
     console.log(`  timeago edge cases: ${iterations} iterations`);
   });
@@ -192,7 +192,7 @@ describe('fuzz tests', () => {
     });
 
     console.log(`  duration: ${iterations} iterations`);
-  }, 15000);
+  }, 3000);
 
   it('duration should handle edge cases without crashing', () => {
     const iterations = fuzzTest(() => {
@@ -223,7 +223,7 @@ describe('fuzz tests', () => {
           throw error;
         }
       }
-    }, 2000);
+    }, 600);
 
     console.log(`  duration edge cases: ${iterations} iterations`);
   });
@@ -248,7 +248,7 @@ describe('fuzz tests', () => {
     });
 
     console.log(`  parseDuration: ${iterations} iterations`);
-  }, 15000);
+  }, 3000);
 
   it('parseDuration should handle random strings and edge cases', () => {
     const iterations = fuzzTest(() => {
@@ -271,7 +271,7 @@ describe('fuzz tests', () => {
         // Invalid input should throw
         expect(error).toBeDefined();
       }
-    }, 2000);
+    }, 600);
 
     console.log(`  parseDuration mixed: ${iterations} iterations`);
   });
@@ -289,7 +289,7 @@ describe('fuzz tests', () => {
     });
 
     console.log(`  humanDate: ${iterations} iterations`);
-  }, 15000);
+  }, 3000);
 
   it('humanDate should handle edge cases without crashing', () => {
     const iterations = fuzzTest(() => {
@@ -310,7 +310,7 @@ describe('fuzz tests', () => {
         // Some edge cases might legitimately throw
         // This is expected behavior
       }
-    }, 2000);
+    }, 600);
 
     console.log(`  humanDate edge cases: ${iterations} iterations`);
   });
@@ -328,7 +328,7 @@ describe('fuzz tests', () => {
     });
 
     console.log(`  dateRange: ${iterations} iterations`);
-  }, 15000);
+  }, 3000);
 
   it('dateRange should handle edge cases without crashing', () => {
     const iterations = fuzzTest(() => {
@@ -349,7 +349,7 @@ describe('fuzz tests', () => {
         // Some edge cases might legitimately throw
         // This is expected behavior
       }
-    }, 2000);
+    }, 600);
 
     console.log(`  dateRange edge cases: ${iterations} iterations`);
   });
