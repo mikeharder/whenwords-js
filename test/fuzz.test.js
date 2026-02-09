@@ -153,7 +153,7 @@ describe('fuzz tests', () => {
       try {
         const result = timeago(timestamp, reference);
         expect(typeof result).toBe('string');
-      } catch (error) {
+      } catch (_error) {
         // Some edge cases might legitimately throw
         // This is expected behavior
       }
@@ -306,7 +306,7 @@ describe('fuzz tests', () => {
       try {
         const result = humanDate(timestamp, reference);
         expect(typeof result).toBe('string');
-      } catch (error) {
+      } catch (_error) {
         // Some edge cases might legitimately throw
         // This is expected behavior
       }
@@ -345,7 +345,7 @@ describe('fuzz tests', () => {
       try {
         const result = dateRange(start, end);
         expect(typeof result).toBe('string');
-      } catch (error) {
+      } catch (_error) {
         // Some edge cases might legitimately throw
         // This is expected behavior
       }

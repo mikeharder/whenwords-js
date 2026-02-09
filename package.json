@@ -11,8 +11,9 @@
     "lint:eslint": "cross-env DEBUG=eslint:eslint,eslint:linter eslint .",
     "lint:tsc": "tsc --build --verbose",
     "perf": "node perf/perf.js",
-    "test": "vitest run",
-    "test:ci": "vitest run --coverage",
+    "test": "vitest run --exclude 'test/fuzz.test.js'",
+    "test:ci": "vitest run --coverage --exclude 'test/fuzz.test.js'",
+    "test:fuzz": "vitest run --config vitest.config.fuzz.js --coverage test/fuzz.test.js",
     "web": "serve . -l 8000"
   },
   "devDependencies": {
