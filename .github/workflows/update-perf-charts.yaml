@@ -1,0 +1,53 @@
+name: Update Perf Charts
+
+on:
+  # Run after perf workflow completes on main
+  workflow_run:
+    workflows: ['Perf']
+    types: [completed]
+    branches: [main]
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run daily at 00:00 UTC
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  update-charts:
+    name: Update Performance Charts
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Fetch performance history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run perf:fetch-history
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [ -f web/perf-history.json ]; then
+            git add web/perf-history.json
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+            else
+              git commit -m "Update perf history data [skip ci]"
+              git push
+              echo "✓ Pushed updated perf history"
+            fi
+          else
+            echo "⚠️ perf-history.json not found"
+          fi
