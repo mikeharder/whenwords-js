@@ -67,7 +67,17 @@ Try out the library in your browser with the **[interactive playground](https://
 - Contextual dates with `humanDate()`
 - Smart date ranges with `dateRange()`
 
-To use the playground locally, serve the repository with any HTTP server:
+## Performance Charts
+
+View historical performance benchmarks over time at **[performance charts](https://mikeharder.github.io/whenwords-js/perf-charts.html)**. The charts show:
+
+- Performance trends for each test case over time
+- Average latency across all tests
+- Statistics on test runs and coverage
+
+The performance data is automatically collected from GitHub Actions workflow runs and updated daily.
+
+To serve the playground and charts locally, use any HTTP server:
 
 ```bash
 # Using pnpm (recommended)
@@ -80,6 +90,7 @@ python3 -m http.server 8000
 npx http-server
 
 # Then open http://localhost:8000/web/playground.html
+# Or http://localhost:8000/web/perf-charts.html
 ```
 
 ## Development
@@ -105,6 +116,9 @@ pnpm run check
 
 # Run performance benchmarks
 pnpm run perf
+
+# Fetch historical performance data from GitHub Actions
+pnpm run perf:fetch-history
 ```
 
 ## Specification Compliance
