@@ -259,7 +259,7 @@ function parseDuration(input) {
     const value = parseFloat(match[1]);
     const unit = match[2]; // Already lowercase from working string
     // All units matched by the regex are guaranteed to be in UNIT_DIVISORS
-    totalSeconds += value * /** @type {number} */ (UNIT_DIVISORS[unit]);
+    totalSeconds += value * divisor;
     foundAnyUnit = true;
   }
 
