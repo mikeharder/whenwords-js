@@ -21,7 +21,6 @@ export default defineConfig(
       // Change typescript-eslint unsafe rules from errors to warnings
       // This allows code to pass linting while providing useful type-safety feedback
       '@typescript-eslint/no-unsafe-call': 'warn',
-      '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'warn',

@@ -14,12 +14,60 @@ import yaml from 'js-yaml';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * @typedef {Object} TimeagoTestInput
+ * @property {number|string} timestamp
+ * @property {number|string} [reference]
+ */
+
+/**
+ * @typedef {Object} DurationOptions
+ * @property {boolean} [compact]
+ * @property {number} [max_units]
+ */
+
+/**
+ * @typedef {Object} DurationTestInput
+ * @property {number} seconds
+ * @property {DurationOptions} [options]
+ */
+
+/**
+ * @typedef {Object} HumanDateTestInput
+ * @property {number} timestamp
+ * @property {number} reference
+ */
+
+/**
+ * @typedef {Object} DateRangeTestInput
+ * @property {number} start
+ * @property {number} end
+ */
+
+/**
+ * @typedef {Object} TestCase
+ * @property {string} name
+ * @property {TimeagoTestInput|DurationTestInput|string|HumanDateTestInput|DateRangeTestInput} input
+ * @property {string} [output]
+ * @property {boolean} [error]
+ */
+
+/**
+ * @typedef {Object} TestSuite
+ * @property {TestCase[]} timeago
+ * @property {TestCase[]} duration
+ * @property {TestCase[]} parse_duration
+ * @property {TestCase[]} human_date
+ * @property {TestCase[]} date_range
+ */
+
 // Load tests from YAML file
 const testsYaml = fs.readFileSync(
   path.join(__dirname, '..', 'spec', 'tests.yaml'),
   'utf8'
 );
-const tests = /** @type {unknown} */ (yaml.load(testsYaml));
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+const tests = /** @type {TestSuite} */ (/** @type {unknown} */ (yaml.load(testsYaml)));
 
 const bench = new Bench({ time: 50, warmupTime: 10 });
 
@@ -35,7 +83,8 @@ const timeagoTests = [
 for (const test of timeagoTests) {
   if (test) {
     bench.add(`timeago - ${test.name}`, () => {
-      timeago(test.input.timestamp, test.input.reference);
+      const input = /** @type {TimeagoTestInput} */ (test.input);
+      timeago(input.timestamp, input.reference);
     });
   }
 }
@@ -54,7 +103,8 @@ const durationTests = [
 for (const test of durationTests) {
   if (test) {
     bench.add(`duration - ${test.name}`, () => {
-      duration(test.input.seconds, test.input.options);
+      const input = /** @type {DurationTestInput} */ (test.input);
+      duration(input.seconds, input.options);
     });
   }
 }
@@ -71,7 +121,8 @@ const parseDurationTests = [
 for (const test of parseDurationTests) {
   if (test) {
     bench.add(`parseDuration - ${test.name}`, () => {
-      parseDuration(test.input);
+      const input = /** @type {string} */ (test.input);
+      parseDuration(input);
     });
   }
 }
@@ -88,7 +139,8 @@ const humanDateTests = [
 for (const test of humanDateTests) {
   if (test) {
     bench.add(`humanDate - ${test.name}`, () => {
-      humanDate(test.input.timestamp, test.input.reference);
+      const input = /** @type {HumanDateTestInput} */ (test.input);
+      humanDate(input.timestamp, input.reference);
     });
   }
 }
@@ -104,7 +156,8 @@ const dateRangeTests = [
 for (const test of dateRangeTests) {
   if (test) {
     bench.add(`dateRange - ${test.name}`, () => {
-      dateRange(test.input.start, test.input.end);
+      const input = /** @type {DateRangeTestInput} */ (test.input);
+      dateRange(input.start, input.end);
     });
   }
 }
