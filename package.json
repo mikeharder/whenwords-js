@@ -11,6 +11,7 @@
     "lint:eslint": "cross-env DEBUG=eslint:eslint,eslint:linter eslint .",
     "lint:tsc": "tsc --build --verbose",
     "perf": "node perf/perf.js",
+    "perf:fetch-history": "node scripts/fetch-perf-history.js",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "web": "serve . -l 8000"

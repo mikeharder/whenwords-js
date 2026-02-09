@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>whenwords Performance History</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 3px solid #007acc;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #555;
+        margin-top: 30px;
+        border-left: 4px solid #007acc;
+        padding-left: 10px;
+      }
+      .description {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .chart-container {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        height: 400px;
+      }
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+      .error {
+        background: #fee;
+        border: 1px solid #fcc;
+        border-radius: 4px;
+        padding: 20px;
+        margin: 20px 0;
+        color: #c33;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .stat-card h3 {
+        margin: 0 0 10px 0;
+        color: #007acc;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-card .value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #333;
+      }
+      .stat-card .unit {
+        font-size: 0.8em;
+        color: #666;
+      }
+      .filter-controls {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .filter-controls label {
+        margin-right: 10px;
+        font-weight: 500;
+      }
+      .filter-controls select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 whenwords Performance History</h1>
+
+    <div class="description">
+      <p>
+        This page displays historical performance test results from the
+        <code>perf.yaml</code> workflow runs on the <code>main</code> branch.
+        Lower latency values (in nanoseconds) indicate better performance.
+      </p>
+      <p>
+        The data is collected from GitHub Actions workflow runs and updated
+        automatically. Each chart shows the performance trend for a specific
+        test case over time.
+      </p>
+    </div>
+
+    <div class="filter-controls">
+      <label for="testFilter">Select Test:</label>
+      <select id="testFilter">
+        <option value="all">All Tests</option>
+      </select>
+    </div>
+
+    <div id="stats" class="stats"></div>
+    <div id="loading" class="loading">Loading performance data...</div>
+    <div id="error" class="error" style="display: none"></div>
+    <div id="charts"></div>
+
+    <script>
+      // Load and visualize performance history
+      async function loadPerformanceData() {
+        try {
+          const response = await fetch('perf-history.json');
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          document.getElementById('loading').style.display = 'none';
+          const errorDiv = document.getElementById('error');
+          errorDiv.style.display = 'block';
+          errorDiv.innerHTML = `
+            <strong>Error loading performance data:</strong><br>
+            ${error.message}<br><br>
+            <p>Make sure the <code>perf-history.json</code> file exists. Run <code>node scripts/fetch-perf-history.js</code> to generate it.</p>
+          `;
+          throw error;
+        }
+      }
+
+      function getTestNames(data) {
+        const testNames = new Set();
+        data.forEach((run) => {
+          Object.keys(run.results).forEach((name) => testNames.add(name));
+        });
+        return Array.from(testNames).sort();
+      }
+
+      function createChart(testName, data) {
+        const container = document.createElement('div');
+        container.className = 'chart-container';
+        container.id = `chart-${testName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+
+        const canvas = document.createElement('canvas');
+        container.appendChild(canvas);
+
+        document.getElementById('charts').appendChild(container);
+
+        // Prepare data for this test
+        const labels = [];
+        const values = [];
+
+        data.forEach((run) => {
+          if (run.results[testName] !== undefined) {
+            labels.push(new Date(run.date).toLocaleDateString());
+            values.push(run.results[testName]);
+          }
+        });
+
+        // Create chart
+        new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: testName,
+                data: values,
+                borderColor: '#007acc',
+                backgroundColor: 'rgba(0, 122, 204, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: testName,
+                font: { size: 16, weight: 'bold' },
+              },
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `Latency: ${context.parsed.y.toFixed(2)} ns`;
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                title: {
+                  display: true,
+                  text: 'Latency (nanoseconds)',
+                },
+                beginAtZero: false,
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Date',
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function calculateStats(testName, data) {
+        const values = data
+          .map((run) => run.results[testName])
+          .filter((v) => v !== undefined);
+
+        if (values.length === 0) return null;
+
+        const avg = values.reduce((a, b) => a + b, 0) / values.length;
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const latest = values[values.length - 1];
+
+        return { avg, min, max, latest };
+      }
+
+      function displayStats(testNames, data) {
+        const statsDiv = document.getElementById('stats');
+        statsDiv.innerHTML = '';
+
+        if (testNames.length === 0) return;
+
+        // Calculate overall stats
+        const allValues = [];
+        data.forEach((run) => {
+          Object.values(run.results).forEach((v) => allValues.push(v));
+        });
+
+        const avgAll = allValues.reduce((a, b) => a + b, 0) / allValues.length;
+
+        statsDiv.innerHTML = `
+          <div class="stat-card">
+            <h3>Total Runs</h3>
+            <div class="value">${data.length}</div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Tests</h3>
+            <div class="value">${testNames.length}</div>
+          </div>
+          <div class="stat-card">
+            <h3>Avg Latency</h3>
+            <div class="value">${avgAll.toFixed(2)}</div>
+            <div class="unit">nanoseconds</div>
+          </div>
+          <div class="stat-card">
+            <h3>Date Range</h3>
+            <div class="value" style="font-size: 0.9em;">
+              ${new Date(data[0].date).toLocaleDateString()} -<br>
+              ${new Date(data[data.length - 1].date).toLocaleDateString()}
+            </div>
+          </div>
+        `;
+      }
+
+      async function init() {
+        const data = await loadPerformanceData();
+        document.getElementById('loading').style.display = 'none';
+
+        if (data.length === 0) {
+          document.getElementById('error').style.display = 'block';
+          document.getElementById('error').textContent =
+            'No performance data found.';
+          return;
+        }
+
+        const testNames = getTestNames(data);
+
+        // Populate filter dropdown
+        const filterSelect = document.getElementById('testFilter');
+        testNames.forEach((name) => {
+          const option = document.createElement('option');
+          option.value = name;
+          option.textContent = name;
+          filterSelect.appendChild(option);
+        });
+
+        // Initial display
+        displayStats(testNames, data);
+        testNames.forEach((testName) => createChart(testName, data));
+
+        // Filter functionality
+        filterSelect.addEventListener('change', (e) => {
+          const chartsDiv = document.getElementById('charts');
+          const selectedTest = e.target.value;
+
+          if (selectedTest === 'all') {
+            // Show all charts
+            chartsDiv.querySelectorAll('.chart-container').forEach((chart) => {
+              chart.style.display = 'block';
+            });
+          } else {
+            // Show only selected chart
+            chartsDiv.querySelectorAll('.chart-container').forEach((chart) => {
+              const chartId = `chart-${selectedTest.replace(/[^a-zA-Z0-9]/g, '-')}`;
+              chart.style.display = chart.id === chartId ? 'block' : 'none';
+            });
+          }
+        });
+      }
+
+      init();
+    </script>
+  </body>
+</html>
