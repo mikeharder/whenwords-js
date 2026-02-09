@@ -19,15 +19,13 @@ const testsYaml = fs.readFileSync(
   path.join(__dirname, '..', 'spec', 'tests.yaml'),
   'utf8'
 );
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const tests = yaml.load(testsYaml);
+const tests = /** @type {unknown} */ (yaml.load(testsYaml));
 
 const jsTestsYaml = fs.readFileSync(
   path.join(__dirname, 'js-tests.yaml'),
   'utf8'
 );
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const jsTests = yaml.load(jsTestsYaml);
+const jsTests = /** @type {unknown} */ (yaml.load(jsTestsYaml));
 
 describe('timeago', () => {
   for (const test of tests.timeago) {
