@@ -118,49 +118,16 @@ function duration(seconds, options = {}) {
     if (parts.length >= maxUnits) break;
     const count = Math.floor(remaining / unit.divisor);
     if (count > 0) {
-      if (compact) {
-        parts.push(`${count}${unit.shortName}`);
-      } else {
-        const suffix = count === 1 ? '' : 's';
-        parts.push(`${count} ${unit.name}${suffix}`);
-      }
+      parts.push({ count, unit });
       remaining -= count * unit.divisor;
     }
   }
 
-  // Handle rounding for the smallest displayed unit
+  // Round up last unit if remainder >= half its divisor
   if (parts.length > 0 && parts.length === maxUnits && remaining > 0) {
-    // Get the last unit's divisor
-    const lastUnitIndex = units.findIndex((u) => {
-      if (compact) {
-        return parts[parts.length - 1].includes(u.shortName);
-      } else {
-        return parts[parts.length - 1].includes(u.name);
-      }
-    });
-
-    // Note: lastUnitIndex will never be the last unit (seconds) when remaining > 0,
-    // since seconds is the smallest unit and would have no remainder
-    const currentUnitDivisor = units[lastUnitIndex].divisor;
-    const fraction = remaining / currentUnitDivisor;
-
-    if (fraction >= 0.5) {
-      // Round up the last displayed unit
-      const lastPart = parts[parts.length - 1];
-      let newCount;
-
-      if (compact) {
-        const match = lastPart.match(/^(\d+)/);
-        newCount = parseInt(match[1]) + 1;
-        const unit = lastPart.substring(match[1].length);
-        parts[parts.length - 1] = `${newCount}${unit}`;
-      } else {
-        const match = lastPart.match(/^(\d+)/);
-        newCount = parseInt(match[1]) + 1;
-        const unitName = lastPart.substring(match[1].length).trim();
-        // newCount is always >= 2 since parts only contain counts >= 1
-        parts[parts.length - 1] = `${newCount} ${unitName.replace(/s$/, '')}s`;
-      }
+    const last = parts[parts.length - 1];
+    if (remaining / last.unit.divisor >= 0.5) {
+      last.count += 1;
     }
   }
 
@@ -168,7 +135,12 @@ function duration(seconds, options = {}) {
     return compact ? '0s' : '0 seconds';
   }
 
-  return compact ? parts.join(' ') : parts.join(', ');
+  const formatted = parts.map(({ count, unit }) => {
+    if (compact) return `${count}${unit.shortName}`;
+    return `${count} ${unit.name}${count === 1 ? '' : 's'}`;
+  });
+
+  return formatted.join(compact ? ' ' : ', ');
 }
 
 // Constants for time unit conversions
