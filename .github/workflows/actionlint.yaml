@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   actionlint:
@@ -22,6 +23,22 @@ jobs:
         run: echo "::add-matcher::.github/matchers/actionlint-matcher.json"
 
       - name: Actionlint
-        uses: docker://rhysd/actionlint:latest
+        run: |
+          set -o pipefail
+          docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:latest -color -verbose 2>&1 | tee actionlint-output.txt
+          {
+            echo '## Actionlint Summary'
+            echo '```text'
+            sed 's/\x1b\[[0-9;]*m//g' actionlint-output.txt
+            echo '```'
+          } | tee "$GITHUB_STEP_SUMMARY" > actionlint-summary.txt
+
+      - name: Post PR comment with actionlint results
+        if: github.event_name == 'pull_request'
+        uses: ./.github/actions/post-pr-comment
         with:
-          args: -color -verbose
+          header: '## ⚙️ Actions - Test Results'
+          body-file: actionlint-summary.txt
+          pr-number: ${{ github.event.pull_request.number }}
+          github-token: ${{ github.token }}
+          workflow-run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

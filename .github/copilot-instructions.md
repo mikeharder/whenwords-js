@@ -180,7 +180,9 @@ The `parseDuration` function was optimized from ~12,000ns to ~600ns (20x improve
 
 The repository uses GitHub Actions for CI:
 
-- `.github/workflows/test.yaml` — Tests, linting, and actionlint workflow validation
+- `.github/workflows/test.yaml` — Tests, linting, and format checking (posts PR comments with "🧪 Test Results")
+- `.github/workflows/test-fuzz.yaml` — Fuzz tests (posts PR comments with "🔀 Fuzz Test Results")
+- `.github/workflows/actionlint.yaml` — GitHub Actions workflow validation (posts PR comments with "⚙️ Actions - Test Results")
 - `.github/workflows/perf.yaml` — Performance benchmarks
 - `.github/workflows/pages.yaml` — Deploy playground to GitHub Pages
 
