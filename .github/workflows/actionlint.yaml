@@ -27,10 +27,13 @@ jobs:
           set -o pipefail
           docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:latest -color -verbose 2>&1 | tee actionlint-output.txt
           {
-            echo '## Actionlint Summary'
+            echo '<details>'
+            echo '<summary>⚙️ Actionlint Output (click to expand)</summary>'
+            echo ''
             echo '```text'
             sed 's/\x1b\[[0-9;]*m//g' actionlint-output.txt
             echo '```'
+            echo '</details>'
           } | tee "$GITHUB_STEP_SUMMARY" > actionlint-summary.txt
 
       - name: Post PR comment with actionlint results
