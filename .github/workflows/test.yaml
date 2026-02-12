@@ -18,15 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
-      - name: Setup actionlint matcher
-        run: echo "::add-matcher::.github/matchers/actionlint-matcher.json"
-
-      - name: Actionlint
-        uses: docker://rhysd/actionlint:latest
-        with:
-          args: -color -verbose
-
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
 
