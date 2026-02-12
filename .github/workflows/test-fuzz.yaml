@@ -1,0 +1,54 @@
+name: Fuzz Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  fuzz:
+    name: Fuzz Tests
+    runs-on: ubuntu-slim
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: pnpm run test:fuzz
+        run: |
+          set -o pipefail
+          pnpm run test:fuzz | tee vitest-fuzz-output.txt
+          {
+            echo '## Vitest Fuzz Summary'
+            echo '```text'
+            awk '/Test Files/{flag=1} flag{print} /Duration/{flag=0}' vitest-fuzz-output.txt | sed 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+            echo '## Coverage Report'
+            echo '```text'
+            cat coverage/coverage.txt
+            echo '```'
+            echo '<details>'
+            echo '<summary>📋 Full Fuzz Test Log (click to expand)</summary>'
+            echo ''
+            echo '```text'
+            sed 's/\x1b\[[0-9;]*m//g' vitest-fuzz-output.txt
+            echo '```'
+            echo '</details>'
+          } | tee "$GITHUB_STEP_SUMMARY" > fuzz-summary.txt
+
+      - name: Post PR comment with fuzz test results
+        if: github.event_name == 'pull_request'
+        uses: ./.github/actions/post-pr-comment
+        with:
+          header: '## 🔀 Fuzz Test Results'
+          body-file: fuzz-summary.txt
+          pr-number: ${{ github.event.pull_request.number }}
+          github-token: ${{ github.token }}
+          workflow-run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -18,6 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
+      - name: Setup actionlint matcher
+        run: echo "::add-matcher::.github/matchers/actionlint-matcher.json"
+
+      - name: Actionlint
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color -verbose
+
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
 
@@ -46,7 +55,7 @@ jobs:
       - name: pnpm run lint
         run: |
           set -o pipefail
-          pnpm run lint 2>&1 | tee lint-output.txt || echo "Lint failed with exit code $?"
+          pnpm run lint 2>&1 | tee lint-output.txt
           {
             echo '<details>'
             echo '<summary>🔍 Lint Output (click to expand)</summary>'
@@ -70,15 +79,6 @@ jobs:
             echo '```'
             echo '</details>'
           } >> test-summary.txt
-
-      # https://github.com/rhysd/actionlint/blob/main/.github/actionlint-matcher.json
-      - name: Setup actionlint matcher
-        run: echo "::add-matcher::.github/matchers/actionlint-matcher.json"
-
-      - name: Actionlint
-        uses: docker://rhysd/actionlint:latest
-        with:
-          args: -color -verbose
 
       - name: Post PR comment with test results
         if: github.event_name == 'pull_request'

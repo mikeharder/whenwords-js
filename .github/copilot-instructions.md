@@ -129,7 +129,7 @@ All implementations must:
 - **NEVER modify files in the `/spec/` folder** — The spec folder contains the formal specification and is maintained separately. It is excluded from prettier formatting (see `.prettierignore`). Only read from spec files, never write to them.
 - Run `pnpm test` to ensure spec compliance
 - **ALWAYS run `pnpm run check` before considering a change "done"** — This verifies tests, linting (ESLint + TypeScript), and formatting all pass
-- **Formatting is required** — All code must pass `pnpm run format:check` before committing. Run `pnpm run format` to auto-fix formatting issues.
+- **Format code before EVERY commit** — Run `pnpm run format` to auto-fix formatting issues before committing changes. All code must pass `pnpm run format:check` before committing. This is non-negotiable and applies to all file types including YAML workflows.
 - **Type-safety warnings** — TypeScript ESLint provides type-safety warnings (not errors). Address warnings when practical, especially for new code.
 - Keep functions pure and deterministic
 - Update `/usage.md` if API changes
@@ -196,6 +196,7 @@ The repository uses GitHub Actions for CI:
 - **Composite actions** — Extract duplicate workflow steps (like PR commenting logic) into composite actions in `.github/actions/` directory for reusability across workflows
 - **PR comment structure** — Use collapsible `<details>` sections to include comprehensive output (full test logs, lint results, format checks) without cluttering the default PR view. Main summary should be visible by default.
 - **Coverage thresholds** — Configure coverage thresholds in `vitest.config.js` under a nested `thresholds` object to enforce 100% coverage requirements. Tests will fail if any metric (lines, functions, branches, statements) drops below threshold.
+- **Fail on errors** — NEVER suppress command failures with `|| echo` or similar patterns. All steps (tests, lint, format checks) must fail the workflow if they fail. Use `set -o pipefail` to ensure piped commands propagate errors correctly.
 
 ### Workflow Naming Conventions
 
