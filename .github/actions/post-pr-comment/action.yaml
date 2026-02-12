@@ -38,7 +38,7 @@ runs:
 
         # Find existing comment
         COMMENT_ID=$(gh api "repos/{owner}/{repo}/issues/${{ inputs.pr-number }}/comments" \
-          --jq --arg header "${{ inputs.header }}" '.[] | select(.body | startswith($header)) | .id' | head -1)
+          --jq '.[] | select(.body | startswith("${{ inputs.header }}")) | .id' | head -1)
 
         if [ -n "$COMMENT_ID" ]; then
           # Update existing comment
