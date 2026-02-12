@@ -196,6 +196,7 @@ The repository uses GitHub Actions for CI:
 - **Composite actions** — Extract duplicate workflow steps (like PR commenting logic) into composite actions in `.github/actions/` directory for reusability across workflows
 - **PR comment structure** — Use collapsible `<details>` sections to include comprehensive output (full test logs, lint results, format checks) without cluttering the default PR view. Main summary should be visible by default.
 - **Coverage thresholds** — Configure coverage thresholds in `vitest.config.js` under a nested `thresholds` object to enforce 100% coverage requirements. Tests will fail if any metric (lines, functions, branches, statements) drops below threshold.
+- **Fail on errors** — NEVER suppress command failures with `|| echo` or similar patterns. All steps (tests, lint, format checks) must fail the workflow if they fail. Use `set -o pipefail` to ensure piped commands propagate errors correctly.
 
 ### Workflow Naming Conventions
 
