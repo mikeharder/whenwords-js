@@ -46,7 +46,7 @@ jobs:
       - name: pnpm run lint
         run: |
           set -o pipefail
-          pnpm run lint 2>&1 | tee lint-output.txt || echo "Lint failed with exit code $?"
+          pnpm run lint 2>&1 | tee lint-output.txt
           {
             echo '<details>'
             echo '<summary>🔍 Lint Output (click to expand)</summary>'
