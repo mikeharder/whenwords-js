@@ -283,7 +283,7 @@ function humanDate(timestamp, reference) {
   const ts = normalizeTimestamp(timestamp);
   const ref = reference !== undefined ? normalizeTimestamp(reference) : ts;
 
-  const [tYear, tMonth, tDay, _tDayOfWeek] = getDateParts(ts);
+  const [tYear, tMonth, tDay] = getDateParts(ts);
   const [rYear, rMonth, rDay, rDayOfWeek] = getDateParts(ref);
 
   const daysDiff = Math.floor((ref - ts) / SECONDS_PER_DAY);
