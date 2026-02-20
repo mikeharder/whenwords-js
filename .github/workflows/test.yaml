@@ -55,7 +55,7 @@ jobs:
             sed 's/\x1b\[[0-9;]*m//g' lint-output.txt
             echo '```'
             echo '</details>'
-          } >> test-summary.txt
+          } | tee -a "$GITHUB_STEP_SUMMARY" >> test-summary.txt
 
       - name: pnpm run format:check
         run: |
@@ -69,7 +69,7 @@ jobs:
             sed 's/\x1b\[[0-9;]*m//g' format-output.txt
             echo '```'
             echo '</details>'
-          } >> test-summary.txt
+          } | tee -a "$GITHUB_STEP_SUMMARY" >> test-summary.txt
 
       - name: Generate code complexity report
         run: |
