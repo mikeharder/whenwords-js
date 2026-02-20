@@ -71,6 +71,12 @@ jobs:
             echo '</details>'
           } | tee -a "$GITHUB_STEP_SUMMARY" >> test-summary.txt
 
+      - name: Generate code complexity report
+        run: |
+          {
+            node scripts/code-complexity.js src/whenwords.js
+          } >> test-summary.txt
+
       - name: Post PR comment with test results
         if: github.event_name == 'pull_request'
         uses: ./.github/actions/post-pr-comment
