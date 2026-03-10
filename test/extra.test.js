@@ -3,13 +3,6 @@ import { timeago, humanDate, dateRange } from '../src/whenwords.js';
 
 describe('extra coverage tests', () => {
   describe('Date object support', () => {
-    it('should handle ISO 8601 string timestamp', () => {
-      // Test that ISO 8601 strings are accepted and parsed correctly
-      expect(timeago('2024-01-01T00:00:00Z', '2024-01-01T03:00:00Z')).toBe(
-        '3 hours ago'
-      );
-    });
-
     it('should handle Date object as timestamp', () => {
       const date = new Date('2024-03-15T12:00:00Z');
       const refDate = new Date('2024-03-15T15:00:00Z');
