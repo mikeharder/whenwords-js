@@ -26,6 +26,8 @@ function normalizeTimestamp(timestamp) {
 
 /**
  * Round to nearest integer using half-up rounding (2.5 -> 3)
+ * @param {number} n - The number to round
+ * @returns {number}
  */
 function roundHalfUp(n) {
   return Math.floor(n + 0.5);
